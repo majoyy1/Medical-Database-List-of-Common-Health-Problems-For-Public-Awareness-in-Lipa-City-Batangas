@@ -1,1 +1,0 @@
-# Medical-Database-List-of-Common-Health-Problems-For-Public-Awareness-in-Lipa-City-Batangas

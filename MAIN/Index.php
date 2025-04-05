@@ -12,11 +12,14 @@
     <div class="navbar">
         <strong class="logo">HealthMD</strong>
         <div class="dropdown">
+            <a href="checker.php" class="dropbtn">Symptom Checker</a>
+        </div>
+        <div class="dropdown">
             <a href="#" class="dropbtn">Conditions</a>
             <div class="dropdown-content">
-                <a href="#">Condition 1</a>
-                <a href="#">Condition 2</a>
-                <a href="#">Condition 3</a>
+                <a href="#">Fever</a>
+                <a href="#">Fatigue</a>
+                <a href="#">Cough</a>
             </div>
         </div>
         <div class="dropdown">
@@ -36,14 +39,6 @@
             </div>
         </div>
         <div class="dropdown">
-            <a href="#" class="dropbtn">Symptom Checker</a>
-            <div class="dropdown-content">
-                <a href="#">Symptom 1</a>
-                <a href="#">Symptom 2</a>
-                <a href="#">Symptom 3</a>
-            </div>
-        </div>
-        <div class="dropdown">
             <a href="#" class="dropbtn">Find a Doctor</a>
             <div class="dropdown-content">
                 <a href="#">Doctor 1</a>
@@ -60,6 +55,39 @@
             </div>
         </div>
     </div>
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        require_once("db_connect.php"); // Include your DB connection
+
+        $age = $_POST['age'];
+        $sex = $_POST['sex'];
+        $symptoms = $_POST['symptoms'];
+
+        try {
+            $stmt = $conn->prepare("CALL GetPossibleDiseases(:age, :sex, :symptoms)");
+            $stmt->bindParam(':age', $age, PDO::PARAM_INT);
+            $stmt->bindParam(':sex', $sex, PDO::PARAM_STR);
+            $stmt->bindParam(':symptoms', $symptoms, PDO::PARAM_STR);
+            $stmt->execute();
+
+            echo "<table><tr><th>Possible Diseases</th></tr>";
+            $resultsFound = false;
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $resultsFound = true;
+                echo "<tr><td>" . htmlspecialchars($row['Disease']) . "</td></tr>";
+            }
+            echo "</table>";
+
+            if (!$resultsFound) {
+                echo "<p style='text-align:center; color:gray;'>No diseases matched your input.</p>";
+            }
+
+            $stmt->closeCursor(); // Clean up after stored procedure
+        } catch (PDOException $e) {
+            echo "<p style='text-align:center; color:red;'>Error: " . $e->getMessage() . "</p>";
+        }
+    }
+    ?>
 
 </body>
 </html>

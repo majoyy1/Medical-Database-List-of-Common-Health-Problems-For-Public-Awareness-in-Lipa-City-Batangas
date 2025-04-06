@@ -1,9 +1,0 @@
--root
-    - index.php
-    - readme
-    - src
-        - database
-        - admin
-            - index.php
-    - public
-        - 

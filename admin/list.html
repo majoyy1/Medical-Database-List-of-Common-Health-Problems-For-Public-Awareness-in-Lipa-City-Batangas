@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--DataTables CSS-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
+    <!--jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!--DataTables JS-->
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Data</title>
+</head>
+<body>
+    <table id="DiseaseTable" class="display" >
+        <thead>
+            <tr>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</body>
+
+<script>
+    $(document).ready(function() {
+        $('#DiseaseTable').DataTable({
+            ajax: {
+                url: 'callData.php',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'Disease_ID', title: 'ID' },
+                { data: 'Name', title: 'Name' },
+                { data: 'Description', title: 'Description' },
+                { data: 'Category', title: 'Category' }
+            ]
+        });
+    });
+</script>
+</html>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 11, 2025 at 11:25 AM
+-- Generation Time: Apr 12, 2025 at 04:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -29,9 +29,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `affected_group` (
   `Group_ID` int(11) NOT NULL,
+  `Disease_ID` int(11) NOT NULL,
   `Min_Age` int(11) NOT NULL,
   `Max_Age` int(11) NOT NULL,
-  `Gender` varchar(15) NOT NULL
+  `Gender` varchar(10) NOT NULL,
+  `Date_Modified` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -42,8 +44,8 @@ CREATE TABLE `affected_group` (
 
 CREATE TABLE `category` (
   `Category_ID` int(11) NOT NULL,
-  `Category_Name` int(11) NOT NULL,
-  `Description` int(11) NOT NULL
+  `Category_Name` varchar(40) NOT NULL,
+  `Description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -56,11 +58,10 @@ CREATE TABLE `disease` (
   `Disease_ID` int(11) NOT NULL,
   `Disease_Name` varchar(60) NOT NULL,
   `Description` text NOT NULL,
-  `Affected_Group_ID` int(11) NOT NULL,
-  `Classification` text NOT NULL,
-  `Category_ID` int(11) NOT NULL,
-  `Date_Modified` int(11) NOT NULL,
-  `Note` int(11) NOT NULL
+  `Classification` varchar(40) NOT NULL,
+  `Category_ID` int(11) DEFAULT NULL,
+  `Date_Modified` datetime NOT NULL DEFAULT current_timestamp(),
+  `Note` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -71,8 +72,8 @@ CREATE TABLE `disease` (
 
 CREATE TABLE `diseases_symptom` (
   `Diseases_Symptom_ID` int(11) NOT NULL,
-  `Disease_ID` int(11) NOT NULL,
-  `Symptom_ID` int(11) NOT NULL
+  `Disease_ID` int(11) DEFAULT NULL,
+  `Symptom_ID` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -83,8 +84,9 @@ CREATE TABLE `diseases_symptom` (
 
 CREATE TABLE `diseases_treatment` (
   `Diseases_Treatment_ID` int(11) NOT NULL,
-  `Disease_ID` int(11) NOT NULL,
-  `Treatment_ID` int(11) NOT NULL
+  `Disease_ID` int(11) DEFAULT NULL,
+  `Treatment_ID` int(11) DEFAULT NULL,
+  `Date_Modified` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -97,9 +99,9 @@ CREATE TABLE `symptom` (
   `Symptom_ID` int(11) NOT NULL,
   `Symptom_Name` varchar(50) NOT NULL,
   `Description` text NOT NULL,
-  `Severity` varchar(50) NOT NULL,
-  `Note` text NOT NULL,
-  `DateCreated` date NOT NULL
+  `Severity` varchar(30) NOT NULL,
+  `Note` text DEFAULT NULL,
+  `DateCreated` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -110,10 +112,10 @@ CREATE TABLE `symptom` (
 
 CREATE TABLE `treatment` (
   `Treatment_ID` int(11) NOT NULL,
-  `Treatment_Name` int(11) NOT NULL,
-  `Description` int(11) NOT NULL,
-  `Notes` int(11) NOT NULL,
-  `Date_Modified` int(11) NOT NULL
+  `Treatment_Name` varchar(60) NOT NULL,
+  `Description` text NOT NULL,
+  `Notes` text DEFAULT NULL,
+  `Date_Modified` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -124,7 +126,8 @@ CREATE TABLE `treatment` (
 -- Indexes for table `affected_group`
 --
 ALTER TABLE `affected_group`
-  ADD PRIMARY KEY (`Group_ID`);
+  ADD PRIMARY KEY (`Group_ID`),
+  ADD KEY `Disease_ID` (`Disease_ID`);
 
 --
 -- Indexes for table `category`
@@ -137,7 +140,6 @@ ALTER TABLE `category`
 --
 ALTER TABLE `disease`
   ADD PRIMARY KEY (`Disease_ID`),
-  ADD KEY `Affected_Group` (`Affected_Group_ID`),
   ADD KEY `Category_ID` (`Category_ID`);
 
 --
@@ -219,25 +221,30 @@ ALTER TABLE `treatment`
 --
 
 --
+-- Constraints for table `affected_group`
+--
+ALTER TABLE `affected_group`
+  ADD CONSTRAINT `affected_group_ibfk_1` FOREIGN KEY (`Disease_ID`) REFERENCES `disease` (`Disease_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `disease`
 --
 ALTER TABLE `disease`
-  ADD CONSTRAINT `disease_ibfk_1` FOREIGN KEY (`Affected_Group_ID`) REFERENCES `affected_group` (`Group_ID`),
-  ADD CONSTRAINT `disease_ibfk_2` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`);
+  ADD CONSTRAINT `disease_ibfk_1` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`) ON DELETE CASCADE ON UPDATE SET NULL;
 
 --
 -- Constraints for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  ADD CONSTRAINT `diseases_symptom_ibfk_1` FOREIGN KEY (`Symptom_ID`) REFERENCES `symptom` (`Symptom_ID`),
-  ADD CONSTRAINT `diseases_symptom_ibfk_2` FOREIGN KEY (`Disease_ID`) REFERENCES `disease` (`Disease_ID`);
+  ADD CONSTRAINT `diseases_symptom_ibfk_1` FOREIGN KEY (`Disease_ID`) REFERENCES `disease` (`Disease_ID`) ON DELETE SET NULL ON UPDATE SET NULL,
+  ADD CONSTRAINT `diseases_symptom_ibfk_2` FOREIGN KEY (`Symptom_ID`) REFERENCES `symptom` (`Symptom_ID`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
 -- Constraints for table `diseases_treatment`
 --
 ALTER TABLE `diseases_treatment`
-  ADD CONSTRAINT `diseases_treatment_ibfk_1` FOREIGN KEY (`Treatment_ID`) REFERENCES `treatment` (`Treatment_ID`),
-  ADD CONSTRAINT `diseases_treatment_ibfk_2` FOREIGN KEY (`Disease_ID`) REFERENCES `disease` (`Disease_ID`);
+  ADD CONSTRAINT `diseases_treatment_ibfk_1` FOREIGN KEY (`Treatment_ID`) REFERENCES `treatment` (`Treatment_ID`) ON DELETE SET NULL ON UPDATE SET NULL,
+  ADD CONSTRAINT `diseases_treatment_ibfk_2` FOREIGN KEY (`Disease_ID`) REFERENCES `disease` (`Disease_ID`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

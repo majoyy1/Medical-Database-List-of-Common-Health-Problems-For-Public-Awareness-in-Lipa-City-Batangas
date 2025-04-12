@@ -1,9 +1,13 @@
 <?php
-require_once 'dbConnection.php';
-
-$DATA = new crud();
-$result = $DATA->read();
+require_once 'querys.php';
 header('Content-Type: application/json');
-echo json_encode($result);
+
+$DATA = new CrudDisease();
+$result = $DATA->read();
+echo json_encode(['dataDisease' => $result], JSON_PRETTY_PRINT);
 // var_dump($result);
+
+// $temp = new CrudCategory();
+// $categoryResult = $temp->read();
+// echo json_encode(['dataCategory' => $categoryResult], JSON_PRETTY_PRINT);
 ?>

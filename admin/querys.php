@@ -1,6 +1,5 @@
 <?php
 require_once '..\connection.php';
-//$test = new dbconnection;
 
 class Connection {
     protected $dbConn;
@@ -21,7 +20,7 @@ class CrudDisease extends Connection {
     
     public function read() {
         try {
-            $stmt = $this->dbConn->prepare("Call ListofDisease;"); // Use the new procedure
+            $stmt = $this->dbConn->prepare("Call ListofDisease;");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
@@ -31,8 +30,25 @@ class CrudDisease extends Connection {
     }
 
     public function createData($DisName, $description, $classification, $categoryID, $note) {
-        $stmt =$this->dbConn->prepare("Call AddDisease(:DisName, :description, :classification, :categoryID, :note);");
-        $stmt->execute([':DisName' => $DisName, ':description' => $description, ':classification' => $classification, ':categoryID' => $categoryID, ':note' => $note]);
+        try {
+            $stmt =$this->dbConn->prepare("Call AddDisease(:DisName, :description, :classification, :categoryID, :note);");
+            $stmt->execute([':DisName' => $DisName, ':description' => $description, ':classification' => $classification, ':categoryID' => $categoryID, ':note' => $note]);
+            
+        } catch (PDOException $e) {
+            die("Error Sending data: " . $e->getMessage());
+        }
+    
+    }
+
+    public function deleteDiseaseData($dataId) {
+        try {
+            $stmt = $this->dbConn->prepare("Call DeleteDisease(:DataID);");
+            $stmt->execute([':DataID' => $dataId]);
+            echo "Sucess ";
+            
+        } catch (PDOException $e) {
+            die("Error Modifiying data: " . $e->getMessage());
+        }
     }
 
     function __deconstruct(){

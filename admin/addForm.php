@@ -7,14 +7,6 @@ $categResult = $categ->read();
 $Disease = new CrudDisease();
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['addData'])) {
-        $Disease->createData($_POST['DiName'], $_POST['Description'],  $_POST['Classification'],  $_POST['Category'], $_POST['Note'], );
-        header("Location: addForm.php");
-        exit;
-    }
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

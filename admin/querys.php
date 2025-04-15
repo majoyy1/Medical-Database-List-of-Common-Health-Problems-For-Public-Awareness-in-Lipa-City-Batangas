@@ -44,7 +44,7 @@ class CrudDisease extends Connection {
         try {
             $stmt = $this->dbConn->prepare("Call DeleteDisease(:DataID);");
             $stmt->execute([':DataID' => $dataId]);
-            echo "Sucess ";
+            // echo "Sucess ";
             
         } catch (PDOException $e) {
             die("Error Modifiying data: " . $e->getMessage());

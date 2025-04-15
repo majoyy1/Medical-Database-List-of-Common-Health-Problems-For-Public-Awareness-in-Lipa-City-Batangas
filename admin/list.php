@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,17 +17,7 @@
     <title>Disease Data</title>
 </head>
 <body>
-        <!-- Button to Open Modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-        Open Form
-    </button>
 
-    <!-- ---------------------------------------------------------- -->
-    <!-- <button type="submit" value="hahah">Add Data</button> -->
-
-    <!-- <form action="admin/callData.php">
-        <input type="submit" value="Add Disease"/>
-        </form> -->
     <table id="DiseaseTable" class="display" >
         <thead>
             <th>
@@ -37,7 +28,7 @@
 
     <!-- -----ADD FORM------------------------------------------------------->
     <form action="requests.php" method="post">
-        <label for="DeleteID">Disease ID:</label>
+        <label for="DeleteID">ID:</label>
         <input type="text" id="DiName" name="DeleteID">
         <button type="submit">DELETE</button>
     </form>

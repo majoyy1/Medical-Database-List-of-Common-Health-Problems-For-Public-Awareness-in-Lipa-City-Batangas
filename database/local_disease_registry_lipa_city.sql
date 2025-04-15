@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 12, 2025 at 01:29 PM
+-- Generation Time: Apr 15, 2025 at 03:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -25,19 +25,38 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddCategory` (IN `Categ_name` VARCHAR(39), IN `description` TEXT)  DETERMINISTIC SQL SECURITY INVOKER INSERT INTO category(Category_Name, Description) 
-VALUES (Categ_name, description)$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddCategory` (IN `Categ_name` VARCHAR(39), IN `description` TEXT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
+INSERT INTO category(Category_Name, Description) 
+VALUES (Categ_name, description);
+END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDisease` (IN `dName` VARCHAR(60), IN `description` TEXT, IN `classification` VARCHAR(35), IN `categoryID` INT, IN `note` TEXT)  SQL SECURITY INVOKER INSERT INTO disease(Disease_ID, Disease_Name, Description, Classification, Category_ID, Note) 
-VALUES (dName, description, description, classification, categoryID, note)$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDisease` (IN `dName` VARCHAR(60), IN `description` TEXT, IN `classification` VARCHAR(35), IN `categoryID` INT, IN `note` TEXT)  DETERMINISTIC BEGIN
+INSERT INTO disease(Disease_Name, Description, Classification, Category_ID, Note) 
+VALUES (dName, description, classification, categoryID, note);
+END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER DELETE FROM disease WHERE disease.Disease_ID = ID$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
+DELETE FROM disease WHERE disease.Disease_ID = ID;
+END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
+SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
 Left JOIN category as c 
-ON d.Category_ID = c.Category_ID$$
+ON d.Category_ID = c.Category_ID;
+END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC SELECT * FROm category$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDisease` (IN `DName` VARCHAR(60), IN `descriptionDat` TEXT, IN `class` VARCHAR(40), IN `CId` INT, IN `note` TEXT)   BEGIN
+UPDATE disease SET Disease_Name = DName, Description = descriptionDat, Classification = class, Category_ID = CId, Note = note 
+WHERE Disease_ID = disease_ID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllData` ()  DETERMINISTIC BEGIN
+SELECT * FROM `showalllist`;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
+SELECT * FROm category;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDisease` ()   Begin 
 
@@ -67,15 +86,10 @@ CREATE TABLE `affected_group` (
 --
 
 INSERT INTO `affected_group` (`Group_ID`, `Disease_ID`, `Min_Age`, `Max_Age`, `Gender`, `Date_Modified`) VALUES
-(1, 1, 5, 40, 'Both', '2025-03-15'),
-(2, 2, 30, 80, 'Both', '2025-03-16'),
-(3, 3, 15, 65, 'Both', '2025-03-17'),
-(4, 4, 10, 60, 'Male', '2025-03-18'),
 (5, 5, 0, 80, 'Both', '2025-03-19'),
 (6, 6, 20, 80, 'Both', '2025-03-20'),
 (7, 7, 5, 70, 'Both', '2025-03-21'),
 (8, 8, 5, 50, 'Both', '2025-03-22'),
-(9, 9, 0, 60, 'Both', '2025-03-23'),
 (10, 10, 0, 80, 'Both', '2025-03-24');
 
 -- --------------------------------------------------------
@@ -100,7 +114,8 @@ INSERT INTO `category` (`Category_ID`, `Category_Name`, `Description`) VALUES
 (3, 'Vector-Borne Diseases', 'Diseases transmitted by vectors like mosquitoes'),
 (4, 'Respiratory Diseases', 'Diseases affecting the lungs and respiratory system'),
 (5, 'Waterborne Diseases', 'Diseases spread through contaminated water'),
-(6, 'asdasd', 'aaaaaaa');
+(6, 'asdasd', 'aaaaaaa'),
+(7, 'Cat2', 'is null');
 
 -- --------------------------------------------------------
 
@@ -123,20 +138,11 @@ CREATE TABLE `disease` (
 --
 
 INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classification`, `Category_ID`, `Date_Modified`, `Note`) VALUES
-(1, 'Dengue Fever', 'Viral disease transmitted by Aedes mosquitoes', 'Vector-Borne', 3, '2025-04-12 11:07:29', '1'),
-(2, 'Hypertension', 'High blood pressure condition', 'Chronic', 2, '2025-04-12 11:07:29', '2'),
-(3, 'Tuberculosis', 'Bacterial infection that mainly affects the lungs', 'Infectious', 1, '2025-04-12 11:07:29', '3'),
-(4, 'Leptospirosis', 'Bacterial infection spread through contaminated water', 'Waterborne', 5, '2025-04-12 11:07:29', '1'),
 (5, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
 (6, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-12 11:07:29', '3'),
 (7, 'Cholera', 'Acute diarrheal illness caused by water contamination', 'Waterborne', 5, '2025-04-12 11:07:29', '1'),
 (8, 'Asthma', 'Chronic inflammatory disease of the airways', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
-(9, 'Malaria', 'Parasitic disease transmitted by Anopheles mosquitoes', 'Vector-Borne', 3, '2025-04-12 11:07:29', '3'),
-(10, 'Pneumonia', 'Infection that inflames air sacs in lungs', 'Respiratory', 4, '2025-04-12 11:07:29', '1'),
-(11, 'is null', 'is null', 'SAsas', 2, '2025-04-12 16:05:16', ''),
-(12, 'qwq', 'qwq', 'qsa', 1, '2025-04-12 19:10:56', ''),
-(13, 'sdfsd', 'sdfsd', 'sdfsdf', 2, '2025-04-12 19:19:53', 'ertter'),
-(15, 'sdfsd', 'sdfsd', 'sdfsdf', 2, '2025-04-12 19:20:59', 'ertter');
+(10, 'Pneumonia', 'Infection that inflames air sacs in lungs', 'Respiratory', 4, '2025-04-12 11:07:29', '1');
 
 -- --------------------------------------------------------
 
@@ -155,18 +161,18 @@ CREATE TABLE `diseases_symptom` (
 --
 
 INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID`) VALUES
-(1, 1, 1),
-(2, 1, 2),
-(3, 1, 3),
-(4, 1, 4),
-(5, 2, 7),
-(6, 2, 8),
-(7, 3, 1),
-(8, 3, 5),
-(9, 3, 6),
-(10, 4, 1),
-(11, 4, 3),
-(12, 4, 9),
+(1, NULL, 1),
+(2, NULL, 2),
+(3, NULL, 3),
+(4, NULL, 4),
+(5, NULL, 7),
+(6, NULL, 8),
+(7, NULL, 1),
+(8, NULL, 5),
+(9, NULL, 6),
+(10, NULL, 1),
+(11, NULL, 3),
+(12, NULL, 9),
 (13, 5, 1),
 (14, 5, 2),
 (15, 5, 5),
@@ -176,9 +182,9 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (19, 7, 10),
 (20, 8, 5),
 (21, 8, 6),
-(22, 9, 1),
-(23, 9, 2),
-(24, 9, 3),
+(22, NULL, 1),
+(23, NULL, 2),
+(24, NULL, 3),
 (25, 10, 1),
 (26, 10, 5),
 (27, 10, 6);
@@ -201,24 +207,41 @@ CREATE TABLE `diseases_treatment` (
 --
 
 INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatment_ID`, `Date_Modified`) VALUES
-(1, 1, 1, '2025-04-12'),
-(2, 1, 2, '2025-04-12'),
-(3, 1, 8, '2025-04-12'),
-(4, 2, 4, '2025-04-12'),
-(5, 3, 3, '2025-04-12'),
-(6, 3, 8, '2025-04-12'),
-(7, 4, 3, '2025-04-12'),
-(8, 4, 9, '2025-04-12'),
+(1, NULL, 1, '2025-04-12'),
+(2, NULL, 2, '2025-04-12'),
+(3, NULL, 8, '2025-04-12'),
+(4, NULL, 4, '2025-04-12'),
+(5, NULL, 3, '2025-04-12'),
+(6, NULL, 8, '2025-04-12'),
+(7, NULL, 3, '2025-04-12'),
+(8, NULL, 9, '2025-04-12'),
 (9, 5, 1, '2025-04-12'),
 (10, 5, 8, '2025-04-12'),
 (11, 6, 5, '2025-04-12'),
 (12, 7, 2, '2025-04-12'),
 (13, 7, 9, '2025-04-12'),
 (14, 8, 6, '2025-04-12'),
-(15, 9, 7, '2025-04-12'),
-(16, 9, 8, '2025-04-12'),
+(15, NULL, 7, '2025-04-12'),
+(16, NULL, 8, '2025-04-12'),
 (17, 10, 3, '2025-04-12'),
 (18, 10, 8, '2025-04-12');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `showalllist`
+-- (See below for the actual view)
+--
+CREATE TABLE `showalllist` (
+`Disease_ID` int(11)
+,`Disease_Name` varchar(60)
+,`Description` text
+,`Classification` varchar(40)
+,`Category_Name` varchar(40)
+,`Min_Age` int(11)
+,`Max_Age` int(11)
+,`Gender` varchar(10)
+);
 
 -- --------------------------------------------------------
 
@@ -280,6 +303,15 @@ INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes
 (8, 'Bed Rest', 'Physical rest to recover from illness', NULL, '2025-04-12'),
 (9, 'IV Fluids', 'Intravenous fluids for severe dehydration', NULL, '2025-04-12'),
 (10, 'Vaccination', 'Preventive immunization', NULL, '2025-04-12');
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `showalllist`
+--
+DROP TABLE IF EXISTS `showalllist`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `showalllist`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Description`, `d`.`Classification` AS `Classification`, `c`.`Category_Name` AS `Category_Name`, `a`.`Min_Age` AS `Min_Age`, `a`.`Max_Age` AS `Max_Age`, `a`.`Gender` AS `Gender` FROM ((`disease` `d` left join `affected_group` `a` on(`d`.`Disease_ID` = `a`.`Disease_ID`)) left join `category` `c` on(`d`.`Category_ID` = `c`.`Category_ID`)) ;
 
 --
 -- Indexes for dumped tables
@@ -348,13 +380,13 @@ ALTER TABLE `affected_group`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `Category_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Category_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`

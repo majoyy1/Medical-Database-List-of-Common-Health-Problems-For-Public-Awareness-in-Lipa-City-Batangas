@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2025 at 08:55 PM
+-- Generation Time: Apr 15, 2025 at 09:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -35,6 +35,8 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowUserAuth` ()   BEGIN
 SELECT * FROM user; 
 END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `testLoginDbConnection` ()  DETERMINISTIC SELECT user_ID from user LIMIT 1$$
 
 DELIMITER ;
 

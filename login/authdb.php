@@ -3,19 +3,29 @@
 class dbLoginConn {
     private $host = "localhost";
     private $dbName = "login_credentials";
-    private $username = "root";
-    private $password = "";
+    private $username = "loginAdmin";
+    private $password = "Admi";
     protected $conn;
 
     function __construct() {
       try {
+
         $this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbName", $this->username, $this->password);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-       // echo "Connection Successful";
-      } catch(PDOException $e) {
-        die("Connection failed: " . $e->getMessage());
+
+        $test = $this->conn->query("Call testLoginDbConnection;");
+
+        if ($test && $test->fetchColumn()) {
+            echo "Connection Success";
+            return $this->conn;  
+        }
+
+        throw new Exception("Database Error");
+
+      } catch(Exception $e) {
+        error_log("Connection failed: " . $e->getMessage());
+        die("Connection Failed: No Database Connected");
       }
-      return $this->conn;  
     }
 
     public function getConnection() {

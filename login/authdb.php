@@ -4,7 +4,7 @@ class dbLoginConn {
     private $host = "localhost";
     private $dbName = "login_credentials";
     private $username = "loginAdmin";
-    private $password = "Admi";
+    private $password = "Admin";
     protected $conn;
 
     function __construct() {

@@ -46,7 +46,7 @@ class userCredentialCRUD extends dbLoginConn {
     }
 
     function AddUser($uname, $hashpass) {
-        try {
+        try {            
             $stmt = $this->conn->prepare("Call AddUserAuth(:Uname, :hashPass);");
             $stmt->execute([':Uname' => $uname, ':hashPass' => $hashpass]);
             return true;
@@ -60,7 +60,13 @@ class userCredentialCRUD extends dbLoginConn {
         try {
             $stmt = $this->conn->prepare("Call SearchByUserName(:name);");
             $stmt->execute([':name' => $uname]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $temp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($temp == null){
+                // echo 'Null';
+                // throw new Exception("No Matched Value");
+                return $temp;
+            }
+            return $temp;
             
         } catch (PDOException $e) {
             die("Error fetching data: " . $e->getMessage());

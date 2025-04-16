@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 16, 2025 at 07:49 PM
+-- Generation Time: Apr 15, 2025 at 09:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -91,7 +91,8 @@ INSERT INTO `affected_group` (`Group_ID`, `Disease_ID`, `Min_Age`, `Max_Age`, `G
 (5, 5, 0, 80, 'Both', '2025-03-19'),
 (6, 6, 20, 80, 'Both', '2025-03-20'),
 (7, 7, 5, 70, 'Both', '2025-03-21'),
-(8, 8, 5, 50, 'Both', '2025-03-22');
+(8, 8, 5, 50, 'Both', '2025-03-22'),
+(10, 10, 0, 80, 'Both', '2025-03-24');
 
 -- --------------------------------------------------------
 
@@ -142,7 +143,8 @@ INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classificat
 (5, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
 (6, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-12 11:07:29', '3'),
 (7, 'Cholera', 'Acute diarrheal illness caused by water contamination', 'Waterborne', 5, '2025-04-12 11:07:29', '1'),
-(8, 'Asthma', 'Chronic inflammatory disease of the airways', 'Respiratory', 4, '2025-04-12 11:07:29', '2');
+(8, 'Asthma', 'Chronic inflammatory disease of the airways', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
+(10, 'Pneumonia', 'Infection that inflames air sacs in lungs', 'Respiratory', 4, '2025-04-12 11:07:29', '1');
 
 -- --------------------------------------------------------
 
@@ -185,9 +187,9 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (22, NULL, 1),
 (23, NULL, 2),
 (24, NULL, 3),
-(25, NULL, 1),
-(26, NULL, 5),
-(27, NULL, 6);
+(25, 10, 1),
+(26, 10, 5),
+(27, 10, 6);
 
 -- --------------------------------------------------------
 
@@ -223,8 +225,8 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 (14, 8, 6, '2025-04-12'),
 (15, NULL, 7, '2025-04-12'),
 (16, NULL, 8, '2025-04-12'),
-(17, NULL, 3, '2025-04-12'),
-(18, NULL, 8, '2025-04-12');
+(17, 10, 3, '2025-04-12'),
+(18, 10, 8, '2025-04-12');
 
 -- --------------------------------------------------------
 
@@ -386,7 +388,7 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`

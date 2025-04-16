@@ -33,9 +33,11 @@ class CrudDisease extends Connection {
         try {
             $stmt =$this->dbConn->prepare("Call AddDisease(:DisName, :description, :classification, :categoryID, :note);");
             $stmt->execute([':DisName' => $DisName, ':description' => $description, ':classification' => $classification, ':categoryID' => $categoryID, ':note' => $note]);
+            return 1;
             
         } catch (PDOException $e) {
-            die("Error Sending data: " . $e->getMessage());
+            error_log("Error Sending data: " . $e->getMessage());
+            return 0;
         }
     
     }
@@ -49,6 +51,11 @@ class CrudDisease extends Connection {
         } catch (PDOException $e) {
             die("Error Modifiying data: " . $e->getMessage());
         }
+    }
+
+    function cleanData($dataCleaned){
+        $temp = trim($dataCleaned);
+        return htmlspecialchars($temp);
     }
 
     function __deconstruct(){

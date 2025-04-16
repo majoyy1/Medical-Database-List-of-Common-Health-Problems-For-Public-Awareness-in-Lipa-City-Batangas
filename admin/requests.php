@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo $_POST['DeleteID'];
             $temp->deleteDiseaseData($_POST['DeleteID']);
             echo '--Send Request Success'; 
+            header("Location: list.php?success=1");
         }
 
         // header("Location: list.php?success=1");

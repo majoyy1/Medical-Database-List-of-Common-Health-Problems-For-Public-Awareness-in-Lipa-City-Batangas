@@ -4,7 +4,50 @@ require_once 'querys.php';
 $categ = new CrudCategory();
 $categResult = $categ->read();
 
-$Disease = new CrudDisease();
+$disease = new CrudDisease();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (isset($_POST['DiName'])  && $_GET['request'] == 1) {
+        
+        echo $_POST['DiName'];
+        echo $_POST['Description'];
+        echo $_POST['Classification'];
+        echo $_POST['Category'];
+        echo $_POST['Note'];
+
+        $dName = $disease->cleanData($_POST['DiName']);
+        $dDescription = $disease->cleanData($_POST['Description']);
+        $dClasssif = $disease->cleanData($_POST['Classification']);
+        $dCat = $disease->cleanData($_POST['Category']);
+        $dNote = $disease->cleanData($_POST['Note']);
+        
+        if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote)) {
+            $message = "This is a default popup message";
+            $redirect_url = "addForm.php";
+
+            echo "<script>
+            alert('$message');
+            window.location.href = '$redirect_url';
+            </script>";
+        } else {
+            $message = "Error Adding Data";
+            $redirect_url = "addForm.php";
+
+            echo "<script>
+            alert('$message');
+            window.location.href = '$redirect_url';
+            </script>";
+        }
+        
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "GET"){
+    if (isset($_GET['success']) && $_GET['success'] == 1) {
+        $message = "Successfully Added Data";
+    echo "<script>alert('$message');</script>";
+    }
+}
 
 
 ?>
@@ -17,7 +60,7 @@ $Disease = new CrudDisease();
 </head>
 <body>
     <h2>Add Disease Data</h2>
-    <form method="post">
+    <form action="addForm.php?request=1"  method="post">
 
         <label for="name">Disease Name:</label>
         <input type="text" id="DiName" name="DiName" required><br><br>

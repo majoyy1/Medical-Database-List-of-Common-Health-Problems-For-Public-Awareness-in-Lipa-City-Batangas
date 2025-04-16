@@ -32,6 +32,7 @@
         <input type="text" id="DiName" name="DeleteID">
         <button type="submit">DELETE</button>
     </form>
+    <a href="addForm.php"><button type="button">ADD</button></a>
         
 </body>
 

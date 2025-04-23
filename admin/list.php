@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,16 +28,17 @@
         </thead>
     </table>
 
-    <!-- -----ADD FORM------------------------------------------------------->
+    <!-- -----Delete FORM------------------------------------------------------->
     <form action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
         <label for="DeleteID">ID:</label>
         <input type="text" id="DiName" name="DeleteID">
         <button type="submit" id=diName>DELETE</button>
     </form><br>
     <!-- ---------Edit Form------------- -->
-    <form action="requests.php?usr=1" method="post">
-        <label for="EditDataID">ID:</label>
-        <input type="text" id="editdata" name="EditDataID">
+    <form action="edit.php" method="GET" onsubmit="return confirm('Are you sure to continue EDIT Data?');">
+        <label for="editID">ID:</label>
+        <input type="text" id="editdata" name="editID">
+        <input type="text" id="idver" name="auth" value="1" hidden>
         <button type="submit">Edit</button>
     </form>
         
@@ -68,5 +68,40 @@
 
 </script>
 
-
 </html>
+
+<?php
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
+    if ($_GET['success'] == 1) {
+        echo "<script>
+            Swal.fire({
+                title: 'Success!',
+                text: 'Data Deleted Successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = 'list.php';
+            });
+        </script>";
+    } elseif (isset($_GET['error'])) {
+        echo "<script>
+            Swal.fire({
+                title: 'Error!',
+                text: 'Request Failed.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    } elseif($_GET['success'] == 2) {
+        echo "<script>
+            Swal.fire({
+                title: 'Success!',
+                text: 'Data Modified Successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+    }
+}
+?>

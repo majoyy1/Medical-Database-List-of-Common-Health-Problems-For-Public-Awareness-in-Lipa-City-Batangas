@@ -58,6 +58,41 @@ class CrudDisease extends Connection {
         return htmlspecialchars($temp);
     }
 
+    function modifyData($Id, $Name, $Description, $Classification, $CategoryID, $Note) {
+        try {
+            $disName = $this->cleanData($Name);
+            $description = $this->cleanData($Description);
+            $classification = $this->cleanData($Classification);
+            $note = $this->cleanData($Note);
+            echo $Id;
+    
+            $stmt = $this->dbConn->prepare("Call modifyDiseasebyID(:DataID, :DisName, :description, :classification, :categoryID, :note);");
+            $stmt->execute([
+                ':DataID' => $Id,
+                ':DisName' => $disName,
+                ':description' => $description,
+                ':classification' => $classification,
+                ':categoryID' => $CategoryID,
+                ':note' => $note
+            ]);
+            return true; // Return true on success
+        } catch (PDOException $e) {
+            error_log("Error Modifying data: " . $e->getMessage());
+            return false; // Return false on failure
+        }
+    }
+
+    function checkDataById($dataId) {
+        try {
+            $stmt = $this->dbConn->prepare("Call SearchDisByID(:DataID);");
+            $stmt->execute([':DataID' => $dataId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            die("Error fetching data: " . $e->getMessage());
+        }
+    }
+
     function __deconstruct(){
         $this->dbConn = null;
     }

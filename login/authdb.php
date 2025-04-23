@@ -16,7 +16,7 @@ class dbLoginConn {
         $test = $this->conn->query("Call testLoginDbConnection;");
 
         if ($test && $test->fetchColumn()) {
-            echo "Connection Success";
+            // echo "Connection Success";
             return $this->conn;  
         }
 

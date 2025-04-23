@@ -11,7 +11,10 @@
     <!-- Bootstrap CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <!-- ---sweealert js---- -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disease Data</title>
@@ -27,14 +30,22 @@
     </table>
 
     <!-- -----ADD FORM------------------------------------------------------->
-    <form action="requests.php" method="post">
+    <form action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
         <label for="DeleteID">ID:</label>
         <input type="text" id="DiName" name="DeleteID">
-        <button type="submit">DELETE</button>
+        <button type="submit" id=diName>DELETE</button>
+    </form><br>
+    <!-- ---------Edit Form------------- -->
+    <form action="requests.php?usr=1" method="post">
+        <label for="EditDataID">ID:</label>
+        <input type="text" id="editdata" name="EditDataID">
+        <button type="submit">Edit</button>
     </form>
-    <a href="addForm.php"><button type="button">ADD</button></a>
         
 </body>
+<script>
+
+</script>
 
 <script>
     $(document).ready(function() {
@@ -54,6 +65,8 @@
             ]
         });
     });
+
 </script>
+
 
 </html>

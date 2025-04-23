@@ -2,30 +2,33 @@
 require_once "querys.php";
 $temp = new CrudDisease();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (isset($_POST['DeleteID'])) {
-
-        if ($_POST['DeleteID'] == null){
-            echo "Error NO DATA Inputed";
-        } 
-        else {
-            echo $_POST['DeleteID'];
-            $temp->deleteDiseaseData($_POST['DeleteID']);
-            echo '--Send Request Success'; 
-            header("Location: list.php?success=1");
+        if (isset($_POST['DeleteID'])) {
+    
+            if ($_POST['DeleteID'] == null){
+                throw new Exception("No ID Input.");
+            } 
+            else {
+                echo $_POST['DeleteID'];
+                $temp->deleteDiseaseData($_POST['DeleteID']);
+                echo '--Send Request Success'; 
+                header("Location: list.php?success=1");
+                exit;
+            }
         }
 
-        // header("Location: list.php?success=1");
-        exit;
-
     } else {
-        echo "Error POST request!!";
+        throw new Exception("Error Sending Requests! Contact Admin.");
     }
-// -----------------Edit Request Data
-    if (isset($_POST['EditID'])) {
-        
-    }
+} catch (Exception $err) {             
+    $msg = "Error Request! " .$err->getMessage() ." Try Again.";
+    echo "<script>
+        alert('$msg');
+        window.location.href = 'list.php';
+        </script>";
 }
+
 
 ?>

@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['uname']) && isset($_POST['pass'])) {
 
-        echo $_POST['uname'] .$_POST['pass'];
+        echo $_POST['uname'] .$_POST['pass'] ."<br>";//for debugging only remove this after testing
         
         try {
             $security->verifyInputCredentials($_POST['uname'], $_POST['pass']);

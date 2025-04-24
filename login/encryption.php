@@ -1,3 +1,5 @@
+<!-- this page is use to process the account verification -->
+
 <?php
 require_once 'authdb.php';
 

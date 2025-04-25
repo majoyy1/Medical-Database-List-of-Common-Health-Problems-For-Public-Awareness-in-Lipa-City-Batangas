@@ -1,19 +1,24 @@
 <?php
+require_once '../admin/querys.php';
 // === PHP search logic at the top ===
+$database = new CrudDisease();
+$allData = $database->read();
+
 $results = [];
+$results = $allData;
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_GET['search']))) {
     // DB config
-    $host = 'localhost';
-	$db   = 'login_credentials';
-	$user = 'root';
-	$pass = '';
-	$charset = 'utf8mb4';
+    // $host = 'localhost';
+	// $db   = '';
+	// $user = 'root';
+	// $pass = '';
+	// $charset = 'utf8mb4';
 
-    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-    $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ];
+    // $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    // $options = [
+    //     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    //     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    // ];
 
     try {
         $pdo = new PDO($dsn, $user, $pass, $options);
@@ -32,11 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
             $sql .= " AND title LIKE ?";
             $params[] = "%$search%";
         }
-
-        $sql .= " ORDER BY title ASC LIMIT 50";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        $results = $stmt->fetchAll();
+        
+        echo 'asah';
+        $results = $allData;
     } catch (Exception $e) {
         $results = [['title' => 'Error', 'description' => 'Could not connect to the database']];
     }
@@ -81,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
             <?php if (!isset($_GET['ajax'])): ?>
                 <?php foreach ($results as $topic): ?>
                     <li class="bg-white p-4 rounded shadow-md hover:shadow-lg transition">
-                        <h2 class="text-xl font-bold text-blue-700"><?= htmlspecialchars($topic['title']) ?></h2>
-                        <p class="text-gray-700 mt-1"><?= htmlspecialchars($topic['description']) ?></p>
+                        <h2 class="text-xl font-bold text-blue-700"><?= htmlspecialchars($topic['Disease_Name']) ?></h2>
+                        <p class="text-gray-700 mt-1"><?= htmlspecialchars($topic['Description']) ?></p>
                     </li>
                 <?php endforeach; ?>
             <?php endif; ?>

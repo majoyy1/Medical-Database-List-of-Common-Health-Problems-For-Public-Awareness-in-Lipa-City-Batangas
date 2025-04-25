@@ -33,7 +33,7 @@ try {
             }
         }
     }
-} catch (Exception $err) {4
+} catch (Exception $err) {
     $msg = "Error Request! " . $err->getMessage() . " Try Again.";
     echo "<script>
     alert('$msg');

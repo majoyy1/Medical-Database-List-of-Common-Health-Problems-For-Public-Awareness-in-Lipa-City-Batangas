@@ -21,8 +21,11 @@
     <title>Disease Data</title>
 </head>
 <body>
-
+    <div style="text-align: center;">
+        <h3 class="title">Health Lists</h3>
+    </div>
     <table id="DiseaseTable" class="display-table" >
+        
         <thead>
             <th>
                 

@@ -93,6 +93,17 @@ class CrudDisease extends Connection {
         }
     }
 
+    function checkDataByName($dataName) {
+        try {
+            $stmt = $this->dbConn->prepare("SearchHealthTopicsByDisease(:DataName)");
+            $stmt->execute([':DataName' => $dataName]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            die("Error fetching data: " . $e->getMessage());
+        }
+    }
+
     function __deconstruct(){
         $this->dbConn = null;
     }

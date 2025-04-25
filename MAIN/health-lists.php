@@ -1,47 +1,24 @@
 <?php
 require_once '../admin/querys.php';
-// === PHP search logic at the top ===
-$database = new CrudDisease();
-$allData = $database->read();
 
-$results = [];
-$results = $allData;
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_GET['search']))) {
-    // DB config
-    // $host = 'localhost';
-	// $db   = '';
-	// $user = 'root';
-	// $pass = '';
-	// $charset = 'utf8mb4';
+$results = []; // Initialize results array
 
-    // $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-    // $options = [
-    //     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    //     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    // ];
+try {
+    $database = new CrudDisease();
 
-    try {
-        $pdo = new PDO($dsn, $user, $pass, $options);
+    // Handle GET requests with 'letter' or 'search' parameters
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_GET['search']))) {
         $letter = $_GET['letter'] ?? '';
         $search = $_GET['search'] ?? '';
 
-        $sql = "SELECT title, description FROM health_topics WHERE 1=1";
-        $params = [];
-
-        if (!empty($letter)) {
-            $sql .= " AND title LIKE ?";
-            $params[] = "$letter%";
-        }
-
+        // Filter results based on the provided letter or search term
         if (!empty($search)) {
-            $sql .= " AND title LIKE ?";
-            $params[] = "%$search%";
+            $results = $database->checkDataByName($search);
+        } elseif (!empty($letter)) {
+            $results = $database->checkDataByName($letter);
+        } else {
+            $results = $database->read(); // Fetch all data if no filter is applied
         }
-        
-        echo 'asah';
-        $results = $allData;
-    } catch (Exception $e) {
-        $results = [['title' => 'Error', 'description' => 'Could not connect to the database']];
     }
 
     // If it's an AJAX request, return JSON and stop
@@ -50,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
         echo json_encode($results);
         exit;
     }
+} catch (Exception $e) {
+    $results = [['Disease_Name' => 'Error', 'Description' => 'Could not connect to the database']];
 }
 ?>
 <!DOCTYPE html>
@@ -64,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-4xl font-bold text-center text-blue-700 mb-6">Health Topics A-Z</h1>
 
+        <!-- Search Bar -->
         <div class="flex justify-center mb-6">
             <input id="searchInput" type="text" placeholder="Search health topics..." 
                    class="w-full max-w-md p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -71,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
                     class="bg-blue-600 text-white px-4 rounded-r-md hover:bg-blue-700">Search</button>
         </div>
 
+        <!-- Alphabetical Filter -->
         <div class="flex flex-wrap justify-center space-x-2 mb-8">
             <button onclick="filterByLetter('')" class="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400">All</button>
             <script>
@@ -80,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
             </script>
         </div>
 
+        <!-- Results List -->
         <ul id="results" class="space-y-4">
             <?php if (!isset($_GET['ajax'])): ?>
                 <?php foreach ($results as $topic): ?>
@@ -95,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
     <script>
         let currentLetter = '';
 
+        // Fetch topics based on search or letter filter
         function fetchTopics() {
             const search = document.getElementById('searchInput').value;
             fetch(`?ajax=1&letter=${currentLetter}&search=${encodeURIComponent(search)}`)
@@ -108,13 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['letter']) || isset($_G
                         data.forEach(topic => {
                             const li = document.createElement('li');
                             li.className = "bg-white p-4 rounded shadow-md hover:shadow-lg transition";
-                            li.innerHTML = `<h2 class='text-xl font-bold text-blue-700'>${topic.title}</h2><p class='text-gray-700 mt-1'>${topic.description}</p>`;
+                            li.innerHTML = `<h2 class='text-xl font-bold text-blue-700'>${topic.Disease_Name}</h2><p class='text-gray-700 mt-1'>${topic.Description}</p>`;
                             list.appendChild(li);
                         });
                     }
                 });
         }
 
+        // Filter topics by letter
         function filterByLetter(letter) {
             currentLetter = letter;
             fetchTopics();

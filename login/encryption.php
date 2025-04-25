@@ -45,19 +45,21 @@ class encryptionWork {
                 throw new Exception("Account Verification Failed");
             };
 
-            // var_dump($result);
-            // echo $result[0]["username"];
-            // echo $result[0]["encryption"];
+            var_dump($result);
+            echo $result[0]["username"];
+            echo $result[0]["encryption"];
 
             $dbhashedpass = trim($result[0]["encryption"]);
             if (password_verify($InputPassword, $dbhashedpass)){
                 echo "Password is Correct; <br>";
+                return true;
             } else {
                 throw new Exception("Password Verification Error");
             }
 
         } catch (Exception $err) {
             echo "Error: " .$err->getMessage();
+            return false;
         }
     }
 

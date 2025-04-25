@@ -48,10 +48,12 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Disease</title>
+
+    <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-    <h2>Edit Disease Data</h2>
-    <form action="edit.php" method="post">
+    <form action="edit.php" method="post" class="edit-form">
+        <h2 class="Title">Edit Disease Data</h2>
         <input type="hidden" id="DiName" name="Disease_ID" value="<?php echo isset($diseaseData['Disease_ID']) ? htmlspecialchars($diseaseData['Disease_ID']) : ''; ?>">
 
         <label for="name">Disease Name:</label>
@@ -82,10 +84,12 @@ try {
 
         <button type="submit" name="addData">Submit</button>
         <button type="reset">Reset</button>
-    </form><br>
-    <form action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
-        <input type="text" id="DiName" name="DeleteID" value="<?php echo isset($diseaseData['Disease_ID']) ? htmlspecialchars($diseaseData['Disease_ID']) : ''; ?>" hidden>
-        <button type="submit" id=diName>DELETE</button>
-    </form><br>
+    </form>
+
+    <!-- Delete Button Form -->
+    <form class="delete-form" action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
+        <input type="hidden" id="DiName" name="DeleteID" value="<?php echo isset($diseaseData['Disease_ID']) ? htmlspecialchars($diseaseData['Disease_ID']) : ''; ?>">
+        <button type="submit" class="delete-button">DELETE</button>
+    </form>
 </body>
 </html>

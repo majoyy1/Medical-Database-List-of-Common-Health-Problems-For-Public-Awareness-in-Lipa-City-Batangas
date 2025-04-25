@@ -14,13 +14,18 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="sweetalert2.min.css">
 
+    <link rel="stylesheet" href="css/list.css">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disease Data</title>
 </head>
 <body>
-
-    <table id="DiseaseTable" class="display" >
+    <div style="text-align: center;">
+        <h3 class="title">Health Lists</h3>
+    </div>
+    <table id="DiseaseTable" class="display-table" >
+        
         <thead>
             <th>
                 
@@ -34,6 +39,10 @@
         <input type="text" id="DiName" name="DeleteID">
         <button type="submit" id=diName>DELETE</button>
     </form><br>
+
+    <form action="addForm.php" method="get" class="add-data-form">
+        <button>Add Data</button>
+    </form>
     <!-- ---------Edit Form------------- -->
     <form action="edit.php" method="GET" onsubmit="return confirm('Are you sure to continue EDIT Data?');">
         <label for="editID">ID:</label>
@@ -77,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
         echo "<script>
             Swal.fire({
                 title: 'Success!',
-                text: 'Data Deleted Successfully!',
+                text: 'Request Successfull!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {

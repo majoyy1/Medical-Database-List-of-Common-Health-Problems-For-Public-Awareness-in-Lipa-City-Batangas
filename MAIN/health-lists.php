@@ -13,9 +13,9 @@ try {
 
         // Filter results based on the provided letter or search term
         if (!empty($search)) {
-            $results = $database->checkDataByName($search);
+            $results = $database->checkDataByName($search); // Search by name
         } elseif (!empty($letter)) {
-            $results = $database->checkDataByName($letter);
+            $results = $database->checkDataByLetter($letter); // Search by letter
         } else {
             $results = $database->read(); // Fetch all data if no filter is applied
         }
@@ -77,7 +77,6 @@ try {
     <script>
         let currentLetter = '';
 
-        // Fetch topics based on search or letter filter
         function fetchTopics() {
             const search = document.getElementById('searchInput').value;
             fetch(`?ajax=1&letter=${currentLetter}&search=${encodeURIComponent(search)}`)
@@ -91,14 +90,16 @@ try {
                         data.forEach(topic => {
                             const li = document.createElement('li');
                             li.className = "bg-white p-4 rounded shadow-md hover:shadow-lg transition";
-                            li.innerHTML = `<h2 class='text-xl font-bold text-blue-700'>${topic.Disease_Name}</h2><p class='text-gray-700 mt-1'>${topic.Description}</p>`;
+                            li.innerHTML = `
+                                <h2 class='text-xl font-bold text-blue-700'>${topic.Disease_Name}</h2>
+                                <p class='text-gray-700 mt-1'>${topic.Description || 'No description available'}</p>
+                            `;
                             list.appendChild(li);
                         });
                     }
                 });
         }
 
-        // Filter topics by letter
         function filterByLetter(letter) {
             currentLetter = letter;
             fetchTopics();

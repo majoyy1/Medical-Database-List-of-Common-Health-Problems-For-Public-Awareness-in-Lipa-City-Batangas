@@ -1,5 +1,4 @@
 <?php
-
 require_once 'querys.php';
 $categ = new CrudCategory();
 $categResult = $categ->read();
@@ -11,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         echo $_POST['DiName'];
         echo $_POST['Description'];
-        echo $_POST['Classification'];
+        echo $_POST['Classification'];//for debbugging
         echo $_POST['Category'];
         echo $_POST['Note'];
 
@@ -22,12 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $dNote = $disease->cleanData($_POST['Note']);
         
         if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote)) {
-            $message = "This is a default popup message";
-            $redirect_url = "addForm.php";
+            $message = "The data has been added successfully!";
 
             echo "<script>
             alert('$message');
-            window.location.href = '$redirect_url';
+            window.location.href = 'list.php?success=1';
             </script>";
         } else {
             $message = "Error Adding Data";
@@ -35,20 +33,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             echo "<script>
             alert('$message');
-            window.location.href = '$redirect_url';
+            window.location.href = '';
             </script>";
         }
         
     }
 }
-
-if ($_SERVER["REQUEST_METHOD"] === "GET"){
-    if (isset($_GET['success']) && $_GET['success'] == 1) {
-        $message = "Successfully Added Data";
-    echo "<script>alert('$message');</script>";
-    }
-}
-
 
 ?>
 <!DOCTYPE html>
@@ -57,11 +47,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET"){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Disease</title>
+    <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-    <h2>Add Disease Data</h2>
-    <form action="addForm.php?request=1"  method="post">
-
+    <form action="addForm.php?request=1"  method="post" class="edit-form">
+        <h2>Add Disease Data</h2>
         <label for="name">Disease Name:</label>
         <input type="text" id="DiName" name="DiName" required><br><br>
 

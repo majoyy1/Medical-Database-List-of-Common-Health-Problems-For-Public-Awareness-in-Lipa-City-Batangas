@@ -1,5 +1,5 @@
 <?php
-require_once "querys.php";
+require_once "querys/disease.php";
 $distemp = new CrudDisease();
 $categ = new CrudCategory();
 $categResult = $categ->read();

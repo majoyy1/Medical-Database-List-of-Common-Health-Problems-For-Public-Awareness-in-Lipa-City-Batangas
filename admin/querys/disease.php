@@ -1,5 +1,5 @@
 <?php
-require_once '..\connection.php';
+require_once 'connection.php';
 
 class Connection {
     protected $dbConn;
@@ -29,17 +29,44 @@ class CrudDisease extends Connection {
         }
     }
 
-    public function createData($DisName, $description, $classification, $categoryID, $note) {
+    public function createData($DisName, $description, $classification, $categoryID, $note, $symptomIDs) {
         try {
-            $stmt =$this->dbConn->prepare("Call AddDisease(:DisName, :description, :classification, :categoryID, :note);");
+            $stmt = $this->dbConn->prepare("CALL AddDisease(:DisName, :description, :classification, :categoryID, :note);");
             $stmt->execute([':DisName' => $DisName, ':description' => $description, ':classification' => $classification, ':categoryID' => $categoryID, ':note' => $note]);
+
+            $createdID = $this->getCreatedID();
+            if (!empty($createdID) && isset($createdID[0]['Disease_ID'])) {
+                $diseaseID = $createdID[0]['Disease_ID'];
+                
+
+                foreach ($symptomIDs as $symptomID) {
+                    $stmt = $this->dbConn->prepare("CALL AddDiseaseSymptom(:diseaseID, :symptomID);");
+                    $stmt->execute([':diseaseID' => $diseaseID, ':symptomID' => $symptomID]);
+                    echo "<script>console.log('Created Disease ID: " . $diseaseID . "');</script>";
+                }
+            } else {
+                throw new Exception("Failed to retrieve the created disease ID.");
+            }
+
             return 1;
-            
         } catch (PDOException $e) {
-            error_log("Error Sending data: " . $e->getMessage());
+            error_log("Error creating disease: " . $e->getMessage());
+            return 0;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
             return 0;
         }
-    
+    }
+
+    function getCreatedID() {
+        try {
+            $stmt = $this->dbConn->prepare("Call GetLastDiseaseID;");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            die("Error fetching data: " . $e->getMessage());
+        }
     }
 
     public function deleteDiseaseData($dataId) {
@@ -116,24 +143,3 @@ class CrudDisease extends Connection {
     }
 }
 
-//Category CRUD
-class CrudCategory extends Connection {
-
-    function __construct() {
-        parent::__construct();
-    }
-
-    public function read() {
-        try {
-            $stmt = $this->dbConn->prepare("Call ShowListOfCategory;"); // Use the new procedure
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-        } catch (PDOException $e) {
-            die("Error fetching data: " . $e->getMessage());
-        }
-    }
-
-}
-
-?>

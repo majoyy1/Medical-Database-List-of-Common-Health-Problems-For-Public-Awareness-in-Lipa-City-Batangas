@@ -25,8 +25,8 @@ class dbLoginConn {
         throw new Exception("Database Error");
 
       } catch(Exception $e) {
-        error_log("Connection failed: " . $e->getMessage());
-        //die("Connection Failed: No Database Connected");
+            error_log("Connection failed: " . $e->getMessage());
+            die("Connection Failed: No Database Connected");
       }
     }
 

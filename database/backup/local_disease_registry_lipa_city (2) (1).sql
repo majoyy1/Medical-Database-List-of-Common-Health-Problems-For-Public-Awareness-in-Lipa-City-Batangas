@@ -35,14 +35,65 @@ INSERT INTO disease(Disease_Name, Description, Classification, Category_ID, Note
 VALUES (dName, description, classification, categoryID, note);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDiseaseSymptom` (IN `disId` INT, IN `symid` INT)   INSERT INTO diseases_symptom(Disease_ID, Symptom_ID)
-VALUES (disId, symid)$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddSymptom` (IN `Name` VARCHAR(50), IN `Description` TEXT, IN `Severity` VARCHAR(30), IN `note` TEXT)   BEGIN
+INSERT INTO symptom (Symptom_Name, Description, Severity, Note)
+VALUES(Name, Description, Severity, note);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckCategoryOfId` (IN `id` INT)   BEGIN
+
+SELECT category.Category_ID from category WHERE category.Category_ID = id LIMIT 1;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
+from list_disease_symptom as s 
+WHERE s.Disease_ID = id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteCategory` (IN `id` INT)   BEGIN
+
+DELETE FROM category WHERE Category_ID = id;
+
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
 DELETE FROM disease WHERE disease.Disease_ID = ID;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetLastDiseaseID` ()   SELECT * FROM `disease` ORDER by Disease_ID DESC LIMIT 1$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
+SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
+Left JOIN category as c 
+ON d.Category_ID = c.Category_ID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
+FROM disease as d
+LEFT JOIN category as cat on cat.Category_ID = d.Category_ID
+WHERE d.Disease_ID = id
+LIMIT 1$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetSymptoms` ()   BEGIN
+    SELECT Symptom_Name FROM symptom ORDER BY Symptom_Name ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `disease_ids` TEXT)   BEGIN
+    -- Convert the comma-separated string into a list of IDs and fetch treatments
+    SET @sql = CONCAT('
+        SELECT 
+            dt.Disease_ID,
+            t.Treatment_Name,
+            t.Description 
+        FROM diseases_treatment dt
+        JOIN treatment t ON dt.Treatment_ID = t.Treatment_ID
+        WHERE dt.Disease_ID IN (', disease_ids, ')');
+
+    -- Prepare and execute the dynamic SQL
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPossibleDiseases` (IN `symptom_names` TEXT)   BEGIN
   -- 1) Get all matching diseases
@@ -73,42 +124,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPossibleDiseases` (IN `symptom_n
   WHERE FIND_IN_SET(s.Symptom_Name, symptom_names) > 0;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GetSymptoms` ()   BEGIN
-    SELECT Symptom_Name FROM symptom ORDER BY Symptom_Name ASC;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `disease_ids` TEXT)   BEGIN
-    -- Convert the comma-separated string into a list of IDs and fetch treatments
-    SET @sql = CONCAT('
-        SELECT 
-            dt.Disease_ID,
-            t.Treatment_Name,
-            t.Description 
-        FROM diseases_treatment dt
-        JOIN treatment t ON dt.Treatment_ID = t.Treatment_ID
-        WHERE dt.Disease_ID IN (', disease_ids, ')');
-
-    -- Prepare and execute the dynamic SQL
-    PREPARE stmt FROM @sql;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
-SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
-Left JOIN category as c 
-ON d.Category_ID = c.Category_ID;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDisease` (IN `ID` INT, IN `DName` VARCHAR(60), IN `descriptionDat` TEXT, IN `class` VARCHAR(40), IN `CId` INT, IN `note` TEXT)   BEGIN
-UPDATE disease SET Disease_Name = DName, Description = descriptionDat, Classification = class, Category_ID = CId, Note = note 
-WHERE Disease_ID = ID;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `modifyDiseasebyID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT * FROM disease WHERE Disease_ID = id$$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByLetter` (IN `searchLetter` VARCHAR(5))   BEGIN
     SELECT Disease_Name, description 
     FROM disease 
@@ -121,23 +136,43 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByName` (IN `searchLet
     WHERE Disease_Name LIKE CONCAT('%', searchLetter, '%');
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllData` ()  DETERMINISTIC BEGIN
-SELECT * FROM `showalllist`;
-END$$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM `symptom`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDataById` (IN `id` INT)
+BEGIN
+    SELECT Disease_ID FROM disease WHERE Disease_ID = id LIMIT 1;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createData` (
+    IN `dName` VARCHAR(60),
+    IN `description` TEXT,
+    IN `classification` VARCHAR(35),
+    IN `categoryID` INT,
+    IN `note` TEXT
+)
+BEGIN
+    INSERT INTO disease (Disease_Name, Description, Classification, Category_ID, Note)
+    VALUES (dName, description, classification, categoryID, note);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `testMainDbConnection` ()  DETERMINISTIC SELECT Disease_ID from disease LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDisease` ()   Begin 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateCategoryByID` (IN `id` INT, IN `newName` VARCHAR(40), IN `newDes` TEXT)   BEGIN
 
-SELECT * FROM disease;
+UPDATE category SET category.Category_Name = newName, category.Description = newDes 
+WHERE category.Category_ID = id;
 
-End$$
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateDiseaseByID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
+UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id;
+END$$
 
 DELIMITER ;
 
@@ -444,6 +479,14 @@ INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes
 
 -- --------------------------------------------------------
 
+--
+-- Structure for view `list_disease_symptom`
+--
+DROP TABLE IF EXISTS `list_disease_symptom`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_disease_symptom`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Disease_Description`, `d`.`Classification` AS `Classification`, `cat`.`Category_Name` AS `Category`, `d`.`Note` AS `Note`, `s`.`Symptom_Name` AS `Symptom_Name`, `s`.`Description` AS `Symptom_Description`, `s`.`Severity` AS `Severity`, `d`.`Date_Modified` AS `Date_Modified` FROM (((`disease` `d` left join `category` `cat` on(`cat`.`Category_ID` = `d`.`Category_ID`)) left join `diseases_symptom` `ds` on(`ds`.`Disease_ID` = `d`.`Disease_ID`)) left join `symptom` `s` on(`s`.`Symptom_ID` = `ds`.`Symptom_ID`)) ;
+
+-- --------------------------------------------------------
 --
 -- Structure for view `showalllist`
 --

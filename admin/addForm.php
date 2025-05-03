@@ -14,21 +14,13 @@ $disease = new CrudDisease();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['DiName'])  && $_GET['request'] == 1) {
         
-        echo "<script>
-        console.log(" . $_POST['DiName'] . ");
-        console.log(" . $_POST['Description'] . ");
-        console.log(" . $_POST['Classification'] . ");
-        console.log(" . $_POST['Category'] . ");
-        console.log(" . $_POST['Note'] . ");
-        console.log(" . $_POST['Symptoms'] . ");
-            </script>";
-
         $dName = $disease->cleanData($_POST['DiName']);
         $dDescription = $disease->cleanData($_POST['Description']);
         $dClasssif = $disease->cleanData($_POST['Classification']);
         $dCat = $disease->cleanData($_POST['Category']);
         $dNote = $disease->cleanData($_POST['Note']);
         $symp = $_POST['Symptoms'];
+
         
         if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote, $symp)) {
             $message = "The data has been added successfully!";
@@ -39,11 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </script>";
         } else {
             $message = "Error Adding Data";
-            $redirect_url = "addForm.php";
 
             echo "<script>
             alert('$message');
-            window.location.href = '';
+            window.location.href = 'addForm.php';
             </script>";
         }
         

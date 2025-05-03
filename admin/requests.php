@@ -13,8 +13,8 @@ try {
 
             if ($_POST['DeleteID'] == null) {
                 throw new Exception("No ID Input.");
-            } elseif ($_POST['DeleteID'] != $check[0]['Disease_ID']) {
-                throw new Exception("No Matched ID Found.");
+            } elseif (empty($check)) {
+                throw new Exception("No matching ID found.");
             } else {
                 $distemp->deleteDiseaseData($_POST['DeleteID']);
                 header("Location: list.php?success=1");

@@ -2,17 +2,15 @@
 //Symptom Crud
 require_once 'connection.php';
 
-class CrudSymptoms {
-    private $dbConn;
+class CrudSymptoms extends dbconnection {
 
     function __construct(){
-        $db = new dbconnection;
-        $this->dbConn = $db->getConnection();
+        parent::__construct();
     }
     
     public function read() {
         try {
-            $stmt = $this->dbConn->prepare("Call ShowAllSymptom;");
+            $stmt = $this->conn->prepare("Call ShowAllSymptom;");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
@@ -23,7 +21,7 @@ class CrudSymptoms {
 
     function checkSymptomOfId($id) {
         try {
-            $stmt = $this->dbConn->prepare("Call CheckSymptomOfId(:id);");
+            $stmt = $this->conn->prepare("Call CheckSymptomOfId(:id);");
             $stmt->execute([':id' => $id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
@@ -34,12 +32,12 @@ class CrudSymptoms {
 
     public function createData($symptomName, $description, $severity, $note) {
         try {
-            $stmt =$this->dbConn->prepare("Call AddSymptom(:symptomName, :description, :severity, :note);");
+            $stmt =$this->conn->prepare("Call AddSymptom(:symptomName, :description, :severity, :note);");
             $stmt->execute([':symptomName' => $symptomName, ':description' => $description, ':severity' => $severity ,':note' => $note]);
             return 1;
             
         } catch (PDOException $e) {
-            error_log("Error Sending data: " . $e->getMessage());
+            echo "<script>alert('Error Sending data: " . $e->getMessage() . "');</script>";
             return 0;
         }
     
@@ -47,8 +45,9 @@ class CrudSymptoms {
 
     public function deleteSymptomData($dataId) {
         try {
-            $stmt = $this->dbConn->prepare("Call DeleteSymptom(:DataID);");
+            $stmt = $this->conn->prepare("Call DeleteSymptom(:DataID);");
             $stmt->execute([':DataID' => $dataId]);
+            return 1;
             
         } catch (PDOException $e) {
             die("Error Modifiying data: " . $e->getMessage());
@@ -61,8 +60,9 @@ class CrudSymptoms {
 
     function addDiseaseSymptomConnector($symptomID, $diseaseID) {
         try {
-            $stmt = $this->dbConn->prepare("Call AddDiseaseSymptom(:symptomID, :diseaseID);");
+            $stmt = $this->conn->prepare("Call AddDiseaseSymptom(:symptomID, :diseaseID);");
             $stmt->execute([':symptomID' => $symptomID, ':diseaseID' => $diseaseID]);
+            return 1;
             
         } catch (PDOException $e) {
             die("Error Modifiying data: " . $e->getMessage());
@@ -71,8 +71,9 @@ class CrudSymptoms {
 //still no procedure for this, just reminder
     function deleteDiseaseSymptomConnector($symptomID, $diseaseID) {
         try {
-            $stmt = $this->dbConn->prepare("Call DeleteDiseaseSymptom(:symptomID, :diseaseID);");
+            $stmt = $this->conn->prepare("Call DeleteDiseaseSymptom(:symptomID, :diseaseID);");
             $stmt->execute([':symptomID' => $symptomID, ':diseaseID' => $diseaseID]);
+            return 1;
             
         } catch (PDOException $e) {
             die("Error Modifiying data: " . $e->getMessage());

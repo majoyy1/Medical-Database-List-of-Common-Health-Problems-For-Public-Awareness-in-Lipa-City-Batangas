@@ -63,11 +63,9 @@ form {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
-    align-items: flex-end;
+    flex-direction: row; /* Stack inputs and buttons vertically */
     gap: 10px;
-    margin-bottom: 10px;
-    width: 100%; /* Ensure forms take up the full width of the container */
-    max-width: 400px; /* Set a maximum width for forms */
+    width: fit-content; /* Fit the form to its content */
 }
 
 form.addForm {
@@ -100,8 +98,8 @@ form input[type="text"] {
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 14px;
-    width: auto; /* Adjust width to fit content */
-    min-width: 120px; /* Set a minimum width */
+    width: fit-content;
+    min-width: 10px; /* Set a minimum width */
 }
 
 /* Button Styles */
@@ -109,7 +107,7 @@ button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 8px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;

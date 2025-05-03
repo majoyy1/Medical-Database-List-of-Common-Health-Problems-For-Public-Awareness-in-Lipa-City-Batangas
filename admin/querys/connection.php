@@ -3,8 +3,8 @@
 class dbconnection {
     private $host = "localhost";
     private $dbName = "local_disease_registry_lipa_city";
-    private $username = "loginAdmin";
-    private $password = "Admin";
+    private $username = "root";
+    private $password = "";
     protected $conn;
 
     function __construct() {

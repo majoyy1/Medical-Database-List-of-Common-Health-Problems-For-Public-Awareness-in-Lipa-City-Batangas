@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2025 at 09:45 PM
+-- Generation Time: May 02, 2025 at 08:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -35,9 +35,14 @@ INSERT INTO disease(Disease_Name, Description, Classification, Category_ID, Note
 VALUES (dName, description, classification, categoryID, note);
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDiseaseSymptom` (IN `disId` INT, IN `symid` INT)   INSERT INTO diseases_symptom(Disease_ID, Symptom_ID)
+VALUES (disId, symid)$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
 DELETE FROM disease WHERE disease.Disease_ID = ID;
 END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetLastDiseaseID` ()   SELECT * FROM `disease` ORDER by Disease_ID DESC LIMIT 1$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
 SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
@@ -45,14 +50,32 @@ Left JOIN category as c
 ON d.Category_ID = c.Category_ID;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDisease` (IN `DName` VARCHAR(60), IN `descriptionDat` TEXT, IN `class` VARCHAR(40), IN `CId` INT, IN `note` TEXT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDisease` (IN `ID` INT, IN `DName` VARCHAR(60), IN `descriptionDat` TEXT, IN `class` VARCHAR(40), IN `CId` INT, IN `note` TEXT)   BEGIN
 UPDATE disease SET Disease_Name = DName, Description = descriptionDat, Classification = class, Category_ID = CId, Note = note 
-WHERE Disease_ID = disease_ID;
+WHERE Disease_ID = ID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `modifyDiseasebyID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT * FROM disease WHERE Disease_ID = id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByLetter` (IN `searchLetter` VARCHAR(5))   BEGIN
+    SELECT Disease_Name, description 
+    FROM disease 
+    WHERE Disease_Name LIKE CONCAT(searchLetter, '%');
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByName` (IN `searchLetter` VARCHAR(100))   BEGIN
+    SELECT Disease_Name, description 
+    FROM disease 
+    WHERE Disease_Name LIKE CONCAT('%', searchLetter, '%');
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllData` ()  DETERMINISTIC BEGIN
 SELECT * FROM `showalllist`;
 END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM `symptom`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
@@ -82,17 +105,6 @@ CREATE TABLE `affected_group` (
   `Gender` varchar(10) NOT NULL,
   `Date_Modified` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `affected_group`
---
-
-INSERT INTO `affected_group` (`Group_ID`, `Disease_ID`, `Min_Age`, `Max_Age`, `Gender`, `Date_Modified`) VALUES
-(5, 5, 0, 80, 'Both', '2025-03-19'),
-(6, 6, 20, 80, 'Both', '2025-03-20'),
-(7, 7, 5, 70, 'Both', '2025-03-21'),
-(8, 8, 5, 50, 'Both', '2025-03-22'),
-(10, 10, 0, 80, 'Both', '2025-03-24');
 
 -- --------------------------------------------------------
 
@@ -140,11 +152,48 @@ CREATE TABLE `disease` (
 --
 
 INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classification`, `Category_ID`, `Date_Modified`, `Note`) VALUES
-(5, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
-(6, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-12 11:07:29', '3'),
-(7, 'Cholera', 'Acute diarrheal illness caused by water contamination', 'Waterborne', 5, '2025-04-12 11:07:29', '1'),
-(8, 'Asthma', 'Chronic inflammatory disease of the airways', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
-(10, 'Pneumonia', 'Infection that inflames air sacs in lungs', 'Respiratory', 4, '2025-04-12 11:07:29', '1');
+(37, 'Dengue Fever', 'Viral disease transmitted by Aedes mosquitoes', 'Vector-Borne', 3, '2025-04-23 20:49:35', '1'),
+(38, 'Hypertension', 'High blood pressure condition', 'Chronic', 2, '2025-04-23 20:49:35', '2'),
+(40, 'Leptospirosis', 'Bacterial infection spread through contaminated water', 'Waterborne', 5, '2025-04-23 20:49:35', '1'),
+(41, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-23 20:49:35', '2'),
+(42, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-23 20:49:35', '3'),
+(45, 'Malaria', 'Parasitic disease transmitted by Anopheles mosquitoes', 'Vector-Borne', 3, '2025-04-23 20:49:35', '3'),
+(46, 'Pneumonia', 'Infection that inflames air sacs in lungs', 'Respiratory', 4, '2025-04-23 20:49:35', '1'),
+(47, 'Diabetes Mellitusasas', 'asasaweqwe21', 'Class', 6, '2025-04-25 15:17:20', 'N/a'),
+(50, 'add', 'dada', 'adad', 1, '2025-04-29 16:58:23', ''),
+(51, 'add', 'dada', 'adad', 1, '2025-04-29 16:58:45', ''),
+(52, 'add', 'dada', 'adad', 1, '2025-04-29 16:59:15', ''),
+(53, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:30:46', ''),
+(54, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:31:24', ''),
+(55, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:32:59', ''),
+(56, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:34:11', ''),
+(57, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:34:25', ''),
+(58, 'dfsgdfg', 'dfsgsdfg', 'dfsgdfg', 1, '2025-04-29 17:34:35', ''),
+(59, 'waerwea', 'awerwe', 'awer', 1, '2025-04-29 17:35:42', ''),
+(60, 'sdafasf', 'sadfasdf', 'sdfsdfda', 1, '2025-04-29 17:38:06', ''),
+(61, 'sdfdf', 'asfsdf', 'sdfadf', 1, '2025-04-29 17:38:13', ''),
+(62, 'asfasf', 'asdfa', 'asdfa', 1, '2025-04-29 17:39:32', ''),
+(63, 'asdfasdf', 'asdfsd', 'sadfasd', 1, '2025-04-29 17:39:39', ''),
+(64, 'asdfg', 'asdfgjhf', 'sdafghj', 1, '2025-04-29 17:40:36', ''),
+(65, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:40:52', ''),
+(66, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:19', ''),
+(67, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:21', ''),
+(68, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:24', ''),
+(69, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:26', ''),
+(70, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:29', ''),
+(71, 'qwert', '2t', 'adfs', 1, '2025-04-29 17:41:50', ''),
+(72, 'asdfgjh', 'asdfg', 'dfgh', 1, '2025-04-29 18:50:01', ''),
+(73, 'q4e56tp', '243567890', 'dsfghjk', 1, '2025-04-29 18:52:54', ''),
+(74, '1234', '2134', '23456', 1, '2025-04-29 18:53:53', ''),
+(75, '323456', 'dfdf', 'asdfasd', 1, '2025-04-29 18:54:48', ''),
+(76, 'asdasd', 'asdasd', 'asdasd', 1, '2025-04-29 18:55:11', ''),
+(77, 'test1212', 'asdas', 'aaaaaaaa', 1, '2025-04-29 19:58:56', ''),
+(78, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 19:59:58', ''),
+(79, 'hahahahhahahh1212121111111111111111111111111111111', '111111111111111', '1111111111111111111', 1, '2025-04-29 20:05:06', ''),
+(80, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:06:30', ''),
+(81, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:08:25', ''),
+(82, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:12:13', ''),
+(83, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:16:40', '');
 
 -- --------------------------------------------------------
 
@@ -163,33 +212,25 @@ CREATE TABLE `diseases_symptom` (
 --
 
 INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID`) VALUES
-(1, NULL, 1),
-(2, NULL, 2),
-(3, NULL, 3),
-(4, NULL, 4),
-(5, NULL, 7),
-(6, NULL, 8),
-(7, NULL, 1),
-(8, NULL, 5),
-(9, NULL, 6),
-(10, NULL, 1),
-(11, NULL, 3),
-(12, NULL, 9),
-(13, 5, 1),
-(14, 5, 2),
-(15, 5, 5),
-(16, 6, 8),
-(17, 6, 9),
-(18, 7, 9),
-(19, 7, 10),
-(20, 8, 5),
-(21, 8, 6),
-(22, NULL, 1),
-(23, NULL, 2),
-(24, NULL, 3),
-(25, 10, 1),
-(26, 10, 5),
-(27, 10, 6);
+(36, 40, 5),
+(37, 82, 1),
+(38, 82, 2),
+(39, 82, 3),
+(40, 82, 4),
+(41, 82, 5),
+(42, 82, 6),
+(43, 82, 7),
+(44, 82, 8),
+(45, 82, 9),
+(46, 83, 1),
+(47, 83, 2),
+(48, 83, 3),
+(49, 83, 4),
+(50, 83, 5),
+(51, 83, 6),
+(52, 83, 7),
+(53, 83, 8),
+(54, 83, 9);
 
 -- --------------------------------------------------------
 
@@ -217,16 +258,16 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 (6, NULL, 8, '2025-04-12'),
 (7, NULL, 3, '2025-04-12'),
 (8, NULL, 9, '2025-04-12'),
-(9, 5, 1, '2025-04-12'),
-(10, 5, 8, '2025-04-12'),
-(11, 6, 5, '2025-04-12'),
-(12, 7, 2, '2025-04-12'),
-(13, 7, 9, '2025-04-12'),
-(14, 8, 6, '2025-04-12'),
+(9, NULL, 1, '2025-04-12'),
+(10, NULL, 8, '2025-04-12'),
+(11, NULL, 5, '2025-04-12'),
+(12, NULL, 2, '2025-04-12'),
+(13, NULL, 9, '2025-04-12'),
+(14, NULL, 6, '2025-04-12'),
 (15, NULL, 7, '2025-04-12'),
 (16, NULL, 8, '2025-04-12'),
-(17, 10, 3, '2025-04-12'),
-(18, 10, 8, '2025-04-12');
+(17, NULL, 3, '2025-04-12'),
+(18, NULL, 8, '2025-04-12');
 
 -- --------------------------------------------------------
 
@@ -388,13 +429,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `diseases_treatment`

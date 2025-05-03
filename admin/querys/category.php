@@ -2,7 +2,7 @@
 require_once 'connection.php';
 
 //Category CRUD
-class CrudCategory extends Connection {
+class CrudCategory extends dbconnection {
 
     function __construct() {
         parent::__construct();
@@ -10,7 +10,7 @@ class CrudCategory extends Connection {
 
     public function read() {
         try {
-            $stmt = $this->dbConn->prepare("Call ShowListOfCategory;"); // Use the new procedure
+            $stmt = $this->conn->prepare("Call ShowListOfCategory;"); // Use the new procedure
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             

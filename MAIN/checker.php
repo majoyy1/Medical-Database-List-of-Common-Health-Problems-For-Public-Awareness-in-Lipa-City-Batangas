@@ -1,5 +1,7 @@
 <?php
-require_once 'SC.php';
+require_once 'querys/SC.php';
+
+
 
 $symptomChecker = new SymptomChecker();
 
@@ -26,30 +28,38 @@ $symptomsList = $symptomChecker->getSymptoms();
 <html>
 <head>
     <title>Symptom Checker</title>
+    <link rel="stylesheet" href="/STYLES/Styles.css">
 </head>
 <body>
     <h2>Select Symptoms</h2>
     <form method="POST" action="">
-        <?php foreach ($symptomsList as $symptom): ?>
-            <label>
-                <input type="checkbox" name="symptoms[]" value="<?= htmlspecialchars($symptom['Symptom_Name']) ?>">
-                <?= htmlspecialchars($symptom['Symptom_Name']) ?>
-            </label><br>
-        <?php endforeach; ?>
-        <br>
+    <div class="symptoms-box">
+        <div class="symptom-grid">
+            <?php foreach ($symptomsList as $symptom): ?>
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptoms[]" value="<?= htmlspecialchars($symptom['Symptom_Name']) ?>">
+                    <?= htmlspecialchars($symptom['Symptom_Name']) ?>
+                </label>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    
+    <div class="center-button">
         <button type="submit">Check Diseases</button>
-    </form>
+    </div>
+</form>
 
-    <?php if (!empty($diseases)): ?>
-        <h2>Possible Diseases</h2>
+
+<?php if (!empty($diseases)): ?>
+    <h2>Possible Diseases</h2>
+    <div class="diseases-container">
         <?php foreach ($diseases as $disease): ?>
-            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <div class="disease-box">
                 <strong><?= htmlspecialchars($disease['Disease_Name']) ?></strong><br>
-                Description: <?= nl2br(htmlspecialchars($disease['Description'])) ?><br>
-                Classification: <?= htmlspecialchars($disease['Classification']) ?><br>
+                <p>Description: <?= nl2br(htmlspecialchars($disease['Description'])) ?></p>
+                <p>Classification: <?= htmlspecialchars($disease['Classification']) ?></p>
 
                 <?php
-            
                 $related = array_filter($treatments, fn($t) => $t['Disease_ID'] == $disease['Disease_ID']);
                 if (!empty($related)):
                 ?>
@@ -63,8 +73,9 @@ $symptomsList = $symptomChecker->getSymptoms();
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
-    <?php elseif ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
-        <p>No diseases found for selected symptoms.</p>
-    <?php endif; ?>
+    </div>
+<?php elseif ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+    <p class="no-diseases-message">No diseases found for selected symptoms.</p>
+<?php endif; ?>
 </body>
 </html>

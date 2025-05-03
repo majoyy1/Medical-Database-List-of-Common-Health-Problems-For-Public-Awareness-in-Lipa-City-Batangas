@@ -5,7 +5,7 @@ class dbconnection {
     private $dbName = "local_disease_registry_lipa_city";
     private $username = "loginAdmin";
     private $password = "Admin";
-    private $conn;
+    protected $conn;
 
     function __construct() {
       try {

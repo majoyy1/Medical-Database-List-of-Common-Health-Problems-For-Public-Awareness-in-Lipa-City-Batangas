@@ -1,5 +1,7 @@
 <?php
-require_once "querys.php";
+require_once "querys/disease.php";
+require_once "querys/category.php";
+
 $distemp = new CrudDisease();
 $categ = new CrudCategory();
 $categResult = $categ->read();
@@ -84,6 +86,7 @@ try {
 
         <button type="submit" name="addData">Submit</button>
         <button type="reset">Reset</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Back</button>
     </form>
 
     <!-- Delete Button Form -->

@@ -47,34 +47,61 @@ body {
 /* Form Container */
 .forms-container {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    flex-direction: column; /* Stack forms vertically */
+    align-items: flex-start; /* Align title and forms to the left */
+    gap: 15px; /* Add spacing between forms */
+    margin: 0 auto; /* Center the container */
+    width: fit-content; /* Fit to content width */
+    padding: 10px;
+    border: 1px solid #ddd; /* Optional: Add a border for better visualization */
 }
 
 /* Form Styles */
 form {
     background-color: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: flex-end;
     gap: 10px;
+    margin-bottom: 10px;
+    width: 100%; /* Ensure forms take up the full width of the container */
+    max-width: 400px; /* Set a maximum width for forms */
+}
+
+form.addForm {
+    background-color: #e2f0d9; /* Light green background for add form */
+}
+form.editForm {
+    background-color: #fff3cd; /* Light yellow background for edit form */
+}  
+form.deleteForm {
+    background-color: #f8d7da; /* Light red background for delete form */
+}
+
+form h3 {
+    width: 10px; /* Adjust width to fit content */
+    height: 10px; /* Adjust height to fit content */
+    margin: 0;
+    font-size: 18px;
+    color: #343a40;
 }
 
 form label {
     font-weight: 500;
     color: #495057;
     margin-bottom: 5px;
+    font-size: 14px;
 }
 
 form input[type="text"] {
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 14px;
-    min-width: 150px;
+    width: auto; /* Adjust width to fit content */
+    min-width: 120px; /* Set a minimum width */
 }
 
 /* Button Styles */
@@ -82,12 +109,12 @@ button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
-    height: 38px;
+    height: auto; /* Adjust height to fit content */
 }
 
 button:hover {
@@ -150,16 +177,19 @@ form.deleteForm button:hover {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .forms-container {
-        flex-direction: column;
+        max-width: 100%; /* Allow full width on smaller screens */
+        padding: 10px;
+        align-items: center; /* Center align forms on smaller screens */
     }
 
     form {
-        flex-direction: column;
+        flex-direction: column; /* Stack inputs and buttons vertically */
         align-items: flex-start;
+        width: 100%; /* Make forms full width on smaller screens */
     }
 
     button {
-        width: 100%;
+        width: 100%; /* Full-width buttons on smaller screens */
         margin-top: 10px;
     }
 }

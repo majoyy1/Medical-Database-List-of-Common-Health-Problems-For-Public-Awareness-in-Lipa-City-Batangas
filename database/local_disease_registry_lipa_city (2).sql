@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 16, 2025 at 07:49 PM
+-- Generation Time: May 03, 2025 at 01:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -35,9 +35,20 @@ INSERT INTO disease(Disease_Name, Description, Classification, Category_ID, Note
 VALUES (dName, description, classification, categoryID, note);
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddSymptom` (IN `Name` VARCHAR(50), IN `Description` TEXT, IN `Severity` VARCHAR(30), IN `note` TEXT)   BEGIN
+INSERT INTO symptom (Symptom_Name, Description, Severity, Note)
+VALUES(Name, Description, Severity, note);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
+from list_disease_symptom as s 
+WHERE s.Disease_ID = id$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
 DELETE FROM disease WHERE disease.Disease_ID = ID;
 END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetLastDiseaseID` ()   SELECT * FROM `disease` ORDER by Disease_ID DESC LIMIT 1$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
 SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
@@ -45,26 +56,37 @@ Left JOIN category as c
 ON d.Category_ID = c.Category_ID;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDisease` (IN `DName` VARCHAR(60), IN `descriptionDat` TEXT, IN `class` VARCHAR(40), IN `CId` INT, IN `note` TEXT)   BEGIN
-UPDATE disease SET Disease_Name = DName, Description = descriptionDat, Classification = class, Category_ID = CId, Note = note 
-WHERE Disease_ID = disease_ID;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
+FROM disease as d
+LEFT JOIN category as cat on cat.Category_ID = d.Category_ID
+WHERE d.Disease_ID = id
+LIMIT 1$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByLetter` (IN `searchLetter` VARCHAR(5))   BEGIN
+    SELECT Disease_Name, description 
+    FROM disease 
+    WHERE Disease_Name LIKE CONCAT(searchLetter, '%');
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllData` ()  DETERMINISTIC BEGIN
-SELECT * FROM `showalllist`;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByName` (IN `searchLetter` VARCHAR(100))   BEGIN
+    SELECT Disease_Name, description 
+    FROM disease 
+    WHERE Disease_Name LIKE CONCAT('%', searchLetter, '%');
 END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM `symptom`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `testMainDbConnection` ()  DETERMINISTIC SELECT Disease_ID from disease LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDisease` ()   Begin 
-
-SELECT * FROM disease;
-
-End$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateDiseaseByID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
+UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id;
+END$$
 
 DELIMITER ;
 
@@ -82,16 +104,6 @@ CREATE TABLE `affected_group` (
   `Gender` varchar(10) NOT NULL,
   `Date_Modified` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `affected_group`
---
-
-INSERT INTO `affected_group` (`Group_ID`, `Disease_ID`, `Min_Age`, `Max_Age`, `Gender`, `Date_Modified`) VALUES
-(5, 5, 0, 80, 'Both', '2025-03-19'),
-(6, 6, 20, 80, 'Both', '2025-03-20'),
-(7, 7, 5, 70, 'Both', '2025-03-21'),
-(8, 8, 5, 50, 'Both', '2025-03-22');
 
 -- --------------------------------------------------------
 
@@ -139,10 +151,11 @@ CREATE TABLE `disease` (
 --
 
 INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classification`, `Category_ID`, `Date_Modified`, `Note`) VALUES
-(5, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-12 11:07:29', '2'),
-(6, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-12 11:07:29', '3'),
-(7, 'Cholera', 'Acute diarrheal illness caused by water contamination', 'Waterborne', 5, '2025-04-12 11:07:29', '1'),
-(8, 'Asthma', 'Chronic inflammatory disease of the airways', 'Respiratory', 4, '2025-04-12 11:07:29', '2');
+(37, 'Dengue Fever', 'Viral disease transmitted by Aedes mosquitoes', 'Vector-Borne', 3, '2025-04-23 20:49:35', '1'),
+(38, 'Hypertension', 'High blood pressure condition', 'Chronic', 2, '2025-04-23 20:49:35', '2'),
+(41, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-23 20:49:35', '2'),
+(42, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-23 20:49:35', '3'),
+(84, 'Disease Test One', 'Elevated body temperature test123 hahaha', 'Testaaa', 1, '2025-05-03 14:53:24', 'Wala');
 
 -- --------------------------------------------------------
 
@@ -161,33 +174,21 @@ CREATE TABLE `diseases_symptom` (
 --
 
 INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID`) VALUES
-(1, NULL, 1),
-(2, NULL, 2),
-(3, NULL, 3),
-(4, NULL, 4),
-(5, NULL, 7),
-(6, NULL, 8),
-(7, NULL, 1),
-(8, NULL, 5),
-(9, NULL, 6),
-(10, NULL, 1),
-(11, NULL, 3),
-(12, NULL, 9),
-(13, 5, 1),
-(14, 5, 2),
-(15, 5, 5),
-(16, 6, 8),
-(17, 6, 9),
-(18, 7, 9),
-(19, 7, 10),
-(20, 8, 5),
-(21, 8, 6),
-(22, NULL, 1),
-(23, NULL, 2),
-(24, NULL, 3),
-(25, NULL, 1),
-(26, NULL, 5),
-(27, NULL, 6);
+(36, NULL, 5),
+(55, NULL, 2),
+(56, NULL, 3),
+(57, NULL, 5),
+(58, 84, 1),
+(59, 84, 2),
+(60, 84, 3),
+(61, 84, 4),
+(62, 84, 5),
+(63, 84, 6),
+(64, 84, 7),
+(65, 84, 8),
+(66, 84, 9),
+(67, 84, 10),
+(68, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -215,16 +216,35 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 (6, NULL, 8, '2025-04-12'),
 (7, NULL, 3, '2025-04-12'),
 (8, NULL, 9, '2025-04-12'),
-(9, 5, 1, '2025-04-12'),
-(10, 5, 8, '2025-04-12'),
-(11, 6, 5, '2025-04-12'),
-(12, 7, 2, '2025-04-12'),
-(13, 7, 9, '2025-04-12'),
-(14, 8, 6, '2025-04-12'),
+(9, NULL, 1, '2025-04-12'),
+(10, NULL, 8, '2025-04-12'),
+(11, NULL, 5, '2025-04-12'),
+(12, NULL, 2, '2025-04-12'),
+(13, NULL, 9, '2025-04-12'),
+(14, NULL, 6, '2025-04-12'),
 (15, NULL, 7, '2025-04-12'),
 (16, NULL, 8, '2025-04-12'),
 (17, NULL, 3, '2025-04-12'),
 (18, NULL, 8, '2025-04-12');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `list_disease_symptom`
+-- (See below for the actual view)
+--
+CREATE TABLE `list_disease_symptom` (
+`Disease_ID` int(11)
+,`Disease_Name` varchar(60)
+,`Disease_Description` text
+,`Classification` varchar(40)
+,`Category` varchar(40)
+,`Note` text
+,`Symptom_Name` varchar(50)
+,`Symptom_Description` text
+,`Severity` varchar(30)
+,`Date_Modified` datetime
+);
 
 -- --------------------------------------------------------
 
@@ -272,7 +292,10 @@ INSERT INTO `symptom` (`Symptom_ID`, `Symptom_Name`, `Description`, `Severity`, 
 (7, 'High Blood Pressure', 'Elevated pressure in arteries', 'Severe', 'Silent killer', '2025-04-12'),
 (8, 'Fatigue', 'Extreme tiredness', 'Mild', '', '2025-04-12'),
 (9, 'Diarrhea', 'Frequent loose or liquid bowel movements', 'Moderate', 'Can lead to dehydration', '2025-04-12'),
-(10, 'Vomiting', 'Forceful expulsion of stomach contents', 'Moderate', '', '2025-04-12');
+(10, 'Vomiting', 'Forceful expulsion of stomach contents', 'Moderate', '', '2025-04-12'),
+(20, 'a', 'a', '0', 'aa', '2025-05-03'),
+(21, 'a', 'a', 'a', 'aa', '2025-05-03'),
+(22, 'a', 'a', 'a', 'aa', '2025-05-03');
 
 -- --------------------------------------------------------
 
@@ -303,6 +326,15 @@ INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes
 (8, 'Bed Rest', 'Physical rest to recover from illness', NULL, '2025-04-12'),
 (9, 'IV Fluids', 'Intravenous fluids for severe dehydration', NULL, '2025-04-12'),
 (10, 'Vaccination', 'Preventive immunization', NULL, '2025-04-12');
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `list_disease_symptom`
+--
+DROP TABLE IF EXISTS `list_disease_symptom`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_disease_symptom`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Disease_Description`, `d`.`Classification` AS `Classification`, `cat`.`Category_Name` AS `Category`, `d`.`Note` AS `Note`, `s`.`Symptom_Name` AS `Symptom_Name`, `s`.`Description` AS `Symptom_Description`, `s`.`Severity` AS `Severity`, `d`.`Date_Modified` AS `Date_Modified` FROM (((`disease` `d` left join `category` `cat` on(`cat`.`Category_ID` = `d`.`Category_ID`)) left join `diseases_symptom` `ds` on(`ds`.`Disease_ID` = `d`.`Disease_ID`)) left join `symptom` `s` on(`s`.`Symptom_ID` = `ds`.`Symptom_ID`)) ;
 
 -- --------------------------------------------------------
 
@@ -386,13 +418,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `diseases_treatment`
@@ -404,7 +436,7 @@ ALTER TABLE `diseases_treatment`
 -- AUTO_INCREMENT for table `symptom`
 --
 ALTER TABLE `symptom`
-  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `treatment`

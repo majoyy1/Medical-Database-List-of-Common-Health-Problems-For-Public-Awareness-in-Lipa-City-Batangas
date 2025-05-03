@@ -1,0 +1,101 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e2f0d9; /* Light green background */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid #28a745; /* Green border to match the theme */
+    box-sizing: border-box;
+}
+
+/* Title */
+.container h2 {
+    text-align: center;
+    color: #28a745; /* Green text to match the theme */
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Label Styles */
+.container label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555555;
+}
+
+/* Input and Textarea Styles */
+.container input[type="text"],
+.container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.container textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Button Styles */
+.container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745; /* Green background to match the theme */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.container button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Reset and Back Buttons */
+.container button[type="reset"],
+.container button[type="button"] {
+    background-color: #6c757d; /* Gray background for reset and back buttons */
+}
+
+.container button[type="reset"]:hover,
+.container button[type="button"]:hover {
+    background-color: #5a6268; /* Darker gray on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 20px;
+    }
+
+    .container h2 {
+        font-size: 20px;
+    }
+
+    .container button {
+        font-size: 14px;
+    }
+}

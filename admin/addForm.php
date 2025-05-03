@@ -101,18 +101,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
             ?>
         </select>
-        <small>Hold Ctrl/Cmd to select multiple.</small><br><br>
+        <small>Hold Ctrl/Cmd to select multiple.</small><br>
 
-        <!-- Button to trigger modal -->
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSymptomModal">
-            Add Symptom
-        </button>
-
-        <!-- Display added symptoms -->
-        <div id="addedSymptoms" style="margin-top: 15px;">
-            <h5>Added Symptoms:</h5>
-            <ul id="symptomList"></ul>
-        </div><br>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='addSymptom.php'">Add Symptom</button>
         
         <label for="Note">Note:</label>
         <textarea id="note" name="Note"></textarea><br><br>
@@ -122,81 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Back</button>
 
     </form>
-    <form action="">
-        
-        <!-- Modal for adding symptoms -->
-        <div class="modal fade" id="addSymptomModal" tabindex="-1" aria-labelledby="addSymptomModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered"> <!-- Center the modal -->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addSymptomModalLabel">Add Symptom</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <label for="newSymptom" class="form-label">Symptom Name:</label>
-                        <input type="text" id="newSymptom" class="form-control" placeholder="Enter symptom name">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" id="saveSymptom">Save Symptom</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-a
-    
     
     <script>
-        $(document).ready(function () {
-            // Handle adding a new symptom
-            $('#saveSymptom').on('click', function () {
-                const newSymptom = $('#newSymptom').val().trim();
-                if (newSymptom) {
-                    // Add the symptom to the list
-                    $('#symptomList').append('<li>' + newSymptom + '</li>');
-
-                    // Optionally, add it to the dropdown
-                    $('#symptoms').append('<option value="' + newSymptom + '">' + newSymptom + '</option>');
-
-                    // Clear the input and close the modal
-                    $('#newSymptom').val('');
-                    $('#addSymptomModal').modal('hide');
-                } else {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Please enter a symptom name.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        });
-
-    $(document).ready(function () {
-        // Handle adding a new symptom
-        $('#saveSymptom').on('click', function () {
-            const newSymptom = $('#newSymptom').val().trim();
-            if (newSymptom) {
-                // Add the symptom to the list
-                $('#symptomList').append('<li>' + newSymptom + '</li>');
-
-                // Optionally, add it to the dropdown
-                $('#symptoms').append('<option value="' + newSymptom + '">' + newSymptom + '</option>');
-
-                // Clear the input and close the modal
-                $('#newSymptom').val('');
-                $('#addSymptomModal').modal('hide');
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Please enter a symptom name.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-
         $('form.edit-form').on('submit', function (e) {
             e.preventDefault(); // Prevent the default form submission
 
@@ -216,7 +134,6 @@ a
                 }
             });
         });
-    });
 </script>
 
 </body>

@@ -10,7 +10,7 @@
     <!-- Bootstrap CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- ---sweealert js---- -->
+    <!-- SweetAlert JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <link rel="stylesheet" href="css/list2.css">
@@ -20,6 +20,26 @@
     <title>Disease Data</title>
 </head>
 <body>
+<!-- Bootstrap Navigation Bar -->
+    <!-- Bootstrap Nav-Pills -->
+    <ul class="nav nav-pills justify-content-center bg-light py-3">
+        <li class="nav-item">
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'category.php' ? 'active' : '' ?>" href="category.php">Category</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>" href="list.php">Diseases</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'symptoms.php' ? 'active' : '' ?>" href="symptoms.php">Symptoms</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'treatment.php' ? 'active' : '' ?>" href="treatment.php">Treatment</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'index1.php' ? 'active' : '' ?>" href="../login/index1.php?logout=1">Logout</a>
+        </li>
+    </ul>
+
     <div style="text-align: center;">
         <h3 class="title">Health Lists</h3>
     </div>
@@ -53,7 +73,7 @@
         </form><br>
 
     </div>
-        <!-- Bootstrap Modal -->
+    <!-- Bootstrap Modal -->
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

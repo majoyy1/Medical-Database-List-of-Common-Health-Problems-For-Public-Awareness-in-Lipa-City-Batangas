@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2025 at 08:11 AM
+-- Generation Time: May 03, 2025 at 05:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -43,6 +43,56 @@ DELETE FROM disease WHERE disease.Disease_ID = ID;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetLastDiseaseID` ()   SELECT * FROM `disease` ORDER by Disease_ID DESC LIMIT 1$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPossibleDiseases` (IN `symptom_names` TEXT)   BEGIN
+  -- 1) Get all matching diseases
+  SELECT DISTINCT
+    d.Disease_ID,
+    d.Disease_Name,
+    d.Description,
+    d.Classification,
+    d.Category_ID,
+    d.Date_Modified,
+    d.Note
+  FROM disease d
+  JOIN diseases_symptom ds ON d.Disease_ID = ds.Disease_ID
+  JOIN symptom s           ON ds.Symptom_ID = s.Symptom_ID
+  WHERE FIND_IN_SET(s.Symptom_Name, symptom_names) > 0;
+
+  -- 2) Get treatments for those diseases
+  SELECT DISTINCT
+    t.Treatment_ID,
+    t.Treatment_Name,
+    t.Description,
+    t.Notes,
+    t.Date_Modified
+  FROM treatment t
+  JOIN diseases_treatment dt ON t.Treatment_ID = dt.Treatment_ID
+  JOIN diseases_symptom ds   ON ds.Disease_ID = dt.Disease_ID
+  JOIN symptom s             ON s.Symptom_ID = ds.Symptom_ID
+  WHERE FIND_IN_SET(s.Symptom_Name, symptom_names) > 0;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetSymptoms` ()   BEGIN
+    SELECT Symptom_Name FROM symptom ORDER BY Symptom_Name ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `disease_ids` TEXT)   BEGIN
+    -- Convert the comma-separated string into a list of IDs and fetch treatments
+    SET @sql = CONCAT('
+        SELECT 
+            dt.Disease_ID,
+            t.Treatment_Name,
+            t.Description 
+        FROM diseases_treatment dt
+        JOIN treatment t ON dt.Treatment_ID = t.Treatment_ID
+        WHERE dt.Disease_ID IN (', disease_ids, ')');
+
+    -- Prepare and execute the dynamic SQL
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
 SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
@@ -123,13 +173,21 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`Category_ID`, `Category_Name`, `Description`) VALUES
-(1, 'Infectious Diseases', 'Diseases caused by pathogenic microorganisms'),
-(2, 'Chronic Diseases', 'Long-lasting conditions with persistent effects'),
-(3, 'Vector-Borne Diseases', 'Diseases transmitted by vectors like mosquitoes'),
-(4, 'Respiratory Diseases', 'Diseases affecting the lungs and respiratory system'),
-(5, 'Waterborne Diseases', 'Diseases spread through contaminated water'),
-(6, 'asdasd', 'aaaaaaa'),
-(7, 'Cat2', 'is null');
+(1, 'Respiratory', 'Diseases or symptoms related to the respiratory system, such as the lungs, airways, and breathing mechanisms.'),
+(2, 'Metabolic', 'Conditions that affect the body’s metabolism, including blood sugar regulation, energy production, and fat storage.'),
+(3, 'Cardiovascular', 'Diseases related to the heart and blood vessels, such as high blood pressure, heart attacks, and stroke.'),
+(4, 'Neurological', 'Conditions that affect the brain, spinal cord, and nerves, including diseases like Alzheimer’s, Parkinson’s, and migraines.'),
+(5, 'Gastrointestinal', 'Disorders that affect the digestive system, including conditions like ulcers, IBS, and GERD.'),
+(6, 'Infectious Diseases', 'Diseases caused by pathogens like bacteria, viruses, fungi, and parasites, such as the flu, tuberculosis, and HIV.'),
+(7, 'Musculoskeletal', 'Conditions affecting the muscles, bones, and joints, including arthritis, osteoporosis, and muscle strains.'),
+(8, 'Autoimmune', 'Diseases where the immune system attacks the body’s own cells, including rheumatoid arthritis, lupus, and multiple sclerosis.'),
+(9, 'Psychiatric', 'Mental health conditions affecting mood, behavior, and cognition, such as depression, anxiety, and schizophrenia.'),
+(10, 'Hematologic', 'Diseases related to the blood, including anemia, leukemia, and clotting disorders.'),
+(11, 'Allergic', 'Conditions caused by allergic reactions, including asthma, hay fever, and anaphylaxis.'),
+(12, 'Endocrine', 'Conditions affecting hormone-producing glands, such as thyroid disorders, diabetes, and adrenal insufficiency.'),
+(13, 'Renal', 'Disorders of the kidneys, such as chronic kidney disease, kidney stones, and urinary tract infections.'),
+(14, 'Dermatological', 'Conditions that affect the skin, hair, and nails, such as acne, eczema, and psoriasis.'),
+(15, 'Oncological', 'Cancer-related conditions, including the various types of cancers affecting different organs in the body.');
 
 -- --------------------------------------------------------
 
@@ -152,48 +210,21 @@ CREATE TABLE `disease` (
 --
 
 INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classification`, `Category_ID`, `Date_Modified`, `Note`) VALUES
-(37, 'Dengue Fever', 'Viral disease transmitted by Aedes mosquitoes', 'Vector-Borne', 3, '2025-04-23 20:49:35', '1'),
-(38, 'Hypertension', 'High blood pressure condition', 'Chronic', 2, '2025-04-23 20:49:35', '2'),
-(40, 'Leptospirosis', 'Bacterial infection spread through contaminated water', 'Waterborne', 5, '2025-04-23 20:49:35', '1'),
-(41, 'Influenza', 'Viral infection of the respiratory system', 'Respiratory', 4, '2025-04-23 20:49:35', '2'),
-(42, 'Diabetes Mellitus', 'Metabolic disorder of high blood sugar', 'Chronic', 2, '2025-04-23 20:49:35', '3'),
-(45, 'Malaria', 'Parasitic disease transmitted by Anopheles mosquitoes', 'Vector-Borne', 3, '2025-04-23 20:49:35', '3'),
-(46, 'Pneumonia', 'Infection that inflames air sacs in lungs', 'Respiratory', 4, '2025-04-23 20:49:35', '1'),
-(47, 'Diabetes Mellitusasas', 'asasaweqwe21', 'Class', 6, '2025-04-25 15:17:20', 'N/a'),
-(50, 'add', 'dada', 'adad', 1, '2025-04-29 16:58:23', ''),
-(51, 'add', 'dada', 'adad', 1, '2025-04-29 16:58:45', ''),
-(52, 'add', 'dada', 'adad', 1, '2025-04-29 16:59:15', ''),
-(53, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:30:46', ''),
-(54, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:31:24', ''),
-(55, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:32:59', ''),
-(56, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:34:11', ''),
-(57, 'qwerqw', 'fasdfg', 'fgshrh', 1, '2025-04-29 17:34:25', ''),
-(58, 'dfsgdfg', 'dfsgsdfg', 'dfsgdfg', 1, '2025-04-29 17:34:35', ''),
-(59, 'waerwea', 'awerwe', 'awer', 1, '2025-04-29 17:35:42', ''),
-(60, 'sdafasf', 'sadfasdf', 'sdfsdfda', 1, '2025-04-29 17:38:06', ''),
-(61, 'sdfdf', 'asfsdf', 'sdfadf', 1, '2025-04-29 17:38:13', ''),
-(62, 'asfasf', 'asdfa', 'asdfa', 1, '2025-04-29 17:39:32', ''),
-(63, 'asdfasdf', 'asdfsd', 'sadfasd', 1, '2025-04-29 17:39:39', ''),
-(64, 'asdfg', 'asdfgjhf', 'sdafghj', 1, '2025-04-29 17:40:36', ''),
-(65, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:40:52', ''),
-(66, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:19', ''),
-(67, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:21', ''),
-(68, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:24', ''),
-(69, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:26', ''),
-(70, 'asdfgfh', 'dsfgh', 'dfsgh', 1, '2025-04-29 17:41:29', ''),
-(71, 'qwert', '2t', 'adfs', 1, '2025-04-29 17:41:50', ''),
-(72, 'asdfgjh', 'asdfg', 'dfgh', 1, '2025-04-29 18:50:01', ''),
-(73, 'q4e56tp', '243567890', 'dsfghjk', 1, '2025-04-29 18:52:54', ''),
-(74, '1234', '2134', '23456', 1, '2025-04-29 18:53:53', ''),
-(75, '323456', 'dfdf', 'asdfasd', 1, '2025-04-29 18:54:48', ''),
-(76, 'asdasd', 'asdasd', 'asdasd', 1, '2025-04-29 18:55:11', ''),
-(77, 'test1212', 'asdas', 'aaaaaaaa', 1, '2025-04-29 19:58:56', ''),
-(78, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 19:59:58', ''),
-(79, 'hahahahhahahh1212121111111111111111111111111111111', '111111111111111', '1111111111111111111', 1, '2025-04-29 20:05:06', ''),
-(80, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:06:30', ''),
-(81, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:08:25', ''),
-(82, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:12:13', ''),
-(83, 'test12345667', 'aaaaaaaaaaa', 'aaaaaaaaaaaaa', 1, '2025-04-29 20:16:40', '');
+(1, 'Common Cold', 'A viral infection affecting the upper respiratory tract, causing a runny nose, cough, and sore throat.', '', 1, '2025-05-03 22:54:01', NULL),
+(2, 'Pneumonia', 'A lung infection causing inflammation, fever, cough, and difficulty breathing.', '', 1, '2025-05-03 22:54:01', NULL),
+(3, 'Type 2 Diabetes', 'A chronic metabolic disorder where the body becomes resistant to insulin, leading to high blood sugar levels.', '', 2, '2025-05-03 22:54:01', NULL),
+(4, 'Hypertension', 'High blood pressure, a condition where the force of the blood against the walls of arteries is too high.', '', 3, '2025-05-03 22:54:01', NULL),
+(5, 'Heart Attack', 'A condition where blood flow to the heart is blocked, causing damage to the heart muscle.', '', 3, '2025-05-03 22:54:01', NULL),
+(6, 'Alzheimer\'s Disease', 'A progressive neurodegenerative disease affecting memory and cognition.', '', 4, '2025-05-03 22:54:01', NULL),
+(7, 'Parkinson\'s Disease', 'A neurodegenerative disorder affecting movement, causing tremors and stiffness.', '', 4, '2025-05-03 22:54:01', NULL),
+(8, 'Irritable Bowel Syndrome (IBS)', 'A gastrointestinal disorder causing abdominal pain, bloating, and changes in bowel movements.', '', 5, '2025-05-03 22:54:01', NULL),
+(9, 'Gastroesophageal Reflux Disease (GERD)', 'A digestive disorder where stomach acid frequently flows back into the esophagus.', '', 5, '2025-05-03 22:54:01', NULL),
+(10, 'Tuberculosis', 'A bacterial infection primarily affecting the lungs, causing chronic cough and weight loss.', '', 6, '2025-05-03 22:54:01', NULL),
+(11, 'Malaria', 'A parasitic infection transmitted by mosquitoes, causing fever, chills, and flu-like symptoms.', '', 6, '2025-05-03 22:54:01', NULL),
+(12, 'Rheumatoid Arthritis', 'An autoimmune disease where the immune system attacks the joints, leading to inflammation and deformity.', '', 8, '2025-05-03 22:54:01', NULL),
+(13, 'Multiple Sclerosis', 'An autoimmune disease affecting the central nervous system, leading to muscle weakness and vision problems.', '', 8, '2025-05-03 22:54:01', NULL),
+(14, 'Asthma', 'A chronic respiratory condition where the airways become inflamed and narrowed, leading to breathing difficulties.', '', 11, '2025-05-03 22:54:01', NULL),
+(15, 'Psoriasis', 'A skin disorder that causes red, flaky patches, often on the elbows, knees, and scalp.', '', 14, '2025-05-03 22:54:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -212,25 +243,46 @@ CREATE TABLE `diseases_symptom` (
 --
 
 INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID`) VALUES
-(36, 40, 5),
-(37, 82, 1),
-(38, 82, 2),
-(39, 82, 3),
-(40, 82, 4),
-(41, 82, 5),
-(42, 82, 6),
-(43, 82, 7),
-(44, 82, 8),
-(45, 82, 9),
-(46, 83, 1),
-(47, 83, 2),
-(48, 83, 3),
-(49, 83, 4),
-(50, 83, 5),
-(51, 83, 6),
-(52, 83, 7),
-(53, 83, 8),
-(54, 83, 9);
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 1, 4),
+(5, 2, 1),
+(6, 2, 2),
+(7, 2, 8),
+(8, 2, 9),
+(9, 3, 7),
+(10, 3, 13),
+(11, 4, 9),
+(12, 4, 7),
+(13, 4, 6),
+(14, 5, 9),
+(15, 5, 8),
+(16, 5, 7),
+(17, 6, 7),
+(18, 6, 6),
+(19, 7, 7),
+(20, 7, 6),
+(21, 7, 14),
+(22, 8, 11),
+(23, 8, 12),
+(24, 8, 13),
+(25, 9, 10),
+(26, 9, 13),
+(27, 10, 1),
+(28, 10, 2),
+(29, 10, 7),
+(30, 11, 1),
+(31, 11, 7),
+(32, 11, 6),
+(33, 12, 14),
+(34, 12, 15),
+(35, 13, 6),
+(36, 13, 14),
+(37, 13, 7),
+(39, 14, 8),
+(40, 14, 1),
+(41, 15, 15);
 
 -- --------------------------------------------------------
 
@@ -250,24 +302,57 @@ CREATE TABLE `diseases_treatment` (
 --
 
 INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatment_ID`, `Date_Modified`) VALUES
-(1, NULL, 1, '2025-04-12'),
-(2, NULL, 2, '2025-04-12'),
-(3, NULL, 8, '2025-04-12'),
-(4, NULL, 4, '2025-04-12'),
-(5, NULL, 3, '2025-04-12'),
-(6, NULL, 8, '2025-04-12'),
-(7, NULL, 3, '2025-04-12'),
-(8, NULL, 9, '2025-04-12'),
-(9, NULL, 1, '2025-04-12'),
-(10, NULL, 8, '2025-04-12'),
-(11, NULL, 5, '2025-04-12'),
-(12, NULL, 2, '2025-04-12'),
-(13, NULL, 9, '2025-04-12'),
-(14, NULL, 6, '2025-04-12'),
-(15, NULL, 7, '2025-04-12'),
-(16, NULL, 8, '2025-04-12'),
-(17, NULL, 3, '2025-04-12'),
-(18, NULL, 8, '2025-04-12');
+(1, NULL, NULL, '2025-04-12'),
+(2, NULL, NULL, '2025-04-12'),
+(3, NULL, NULL, '2025-04-12'),
+(4, NULL, NULL, '2025-04-12'),
+(5, NULL, NULL, '2025-04-12'),
+(6, NULL, NULL, '2025-04-12'),
+(7, NULL, NULL, '2025-04-12'),
+(8, NULL, NULL, '2025-04-12'),
+(9, NULL, NULL, '2025-04-12'),
+(10, NULL, NULL, '2025-04-12'),
+(11, NULL, NULL, '2025-04-12'),
+(12, NULL, NULL, '2025-04-12'),
+(13, NULL, NULL, '2025-04-12'),
+(14, NULL, NULL, '2025-04-12'),
+(15, NULL, NULL, '2025-04-12'),
+(16, NULL, NULL, '2025-04-12'),
+(17, NULL, NULL, '2025-04-12'),
+(18, NULL, NULL, '2025-04-12'),
+(19, 1, 1, '2025-05-03'),
+(20, 1, 4, '2025-05-03'),
+(21, 1, 14, '2025-05-03'),
+(22, 2, 3, '2025-05-03'),
+(23, 2, 8, '2025-05-03'),
+(24, 2, 5, '2025-05-03'),
+(25, 3, 7, '2025-05-03'),
+(26, 3, 6, '2025-05-03'),
+(27, 4, 2, '2025-05-03'),
+(28, 4, 9, '2025-05-03'),
+(29, 5, 8, '2025-05-03'),
+(30, 5, 10, '2025-05-03'),
+(31, 6, 6, '2025-05-03'),
+(32, 6, 9, '2025-05-03'),
+(33, 7, 6, '2025-05-03'),
+(34, 7, 9, '2025-05-03'),
+(35, 8, 13, '2025-05-03'),
+(36, 8, 4, '2025-05-03'),
+(37, 8, 12, '2025-05-03'),
+(38, 9, 2, '2025-05-03'),
+(39, 9, 6, '2025-05-03'),
+(40, 10, 3, '2025-05-03'),
+(41, 10, 10, '2025-05-03'),
+(42, 11, 13, '2025-05-03'),
+(43, 11, 3, '2025-05-03'),
+(44, 11, 12, '2025-05-03'),
+(45, 12, 9, '2025-05-03'),
+(46, 12, 12, '2025-05-03'),
+(47, 13, 9, '2025-05-03'),
+(48, 13, 6, '2025-05-03'),
+(49, 14, 5, '2025-05-03'),
+(50, 14, 1, '2025-05-03'),
+(51, 15, 15, '2025-05-03');
 
 -- --------------------------------------------------------
 
@@ -306,16 +391,21 @@ CREATE TABLE `symptom` (
 --
 
 INSERT INTO `symptom` (`Symptom_ID`, `Symptom_Name`, `Description`, `Severity`, `Note`, `DateCreated`) VALUES
-(1, 'Fever', 'Elevated body temperature', 'Moderate', 'Common in many diseases', '2025-04-12'),
-(2, 'Headache', 'Pain in the head or neck region', 'Mild', '', '2025-04-12'),
-(3, 'Muscle Pain', 'Aches in muscles throughout the body', 'Mild', '', '2025-04-12'),
-(4, 'Rash', 'Skin irritation or eruption', 'Mild', '', '2025-04-12'),
-(5, 'Cough', 'Expulsion of air from lungs', 'Moderate', 'Can be dry or productive', '2025-04-12'),
-(6, 'Shortness of Breath', 'Difficulty in breathing', 'Severe', 'Requires immediate attention', '2025-04-12'),
-(7, 'High Blood Pressure', 'Elevated pressure in arteries', 'Severe', 'Silent killer', '2025-04-12'),
-(8, 'Fatigue', 'Extreme tiredness', 'Mild', '', '2025-04-12'),
-(9, 'Diarrhea', 'Frequent loose or liquid bowel movements', 'Moderate', 'Can lead to dehydration', '2025-04-12'),
-(10, 'Vomiting', 'Forceful expulsion of stomach contents', 'Moderate', '', '2025-04-12');
+(1, 'Fever', 'An elevation of body temperature above the normal range.', 'Moderate', 'Common in infections.', '2025-01-10'),
+(2, 'Cough', 'A sudden, forceful hacking sound to release air and clear irritation in the throat or airway.', 'Mild', 'Can be dry or productive.', '2025-01-11'),
+(3, 'Sore Throat', 'Pain or irritation in the throat, often worsened by swallowing.', 'Moderate', 'Often accompanies upper respiratory infections.', '2025-01-12'),
+(4, 'Runny Nose', 'Excess drainage, ranging from a clear fluid to thick mucus, from the nasal passages.', 'Mild', 'Also called rhinorrhea.', '2025-01-13'),
+(5, 'Muscle Aches', 'Pain or discomfort in the muscles, often diffuse and associated with fatigue.', 'Moderate', 'Common in viral illnesses.', '2025-01-14'),
+(6, 'Headache', 'Pain or discomfort in the head or face area.', 'Mild', 'Tension, migraine, or secondary to other conditions.', '2025-01-15'),
+(7, 'Fatigue', 'A feeling of tiredness or exhaustion that may not be relieved by rest.', 'Moderate', 'Can be acute or chronic.', '2025-01-16'),
+(8, 'Shortness of Breath', 'Difficulty breathing or feeling unable to get enough air.', 'Severe', 'Requires prompt evaluation.', '2025-01-17'),
+(9, 'Chest Pain', 'Discomfort or pain in the chest area, which may indicate cardiac or non-cardiac causes.', 'Severe', 'Rule out myocardial infarction.', '2025-01-18'),
+(10, 'Nausea', 'A sensation of unease and discomfort in the upper stomach with an involuntary urge to vomit.', 'Mild', 'Often precedes vomiting.', '2025-01-19'),
+(11, 'Vomiting', 'The forcible voluntary or involuntary emptying (“throwing up”) of stomach contents through the mouth.', 'Moderate', 'Risk of dehydration.', '2025-01-20'),
+(12, 'Diarrhea', 'Loose, watery stools occurring more frequently than usual.', 'Moderate', 'Monitor for fluid loss.', '2025-01-21'),
+(13, 'Abdominal Pain', 'Discomfort in the area between the chest and pelvis.', 'Moderate', 'Etiology can be GI, GU, or other.', '2025-01-22'),
+(14, 'Joint Pain', 'Discomfort arising from any joint of the body.', 'Mild', 'Arthritis or overuse.', '2025-01-23'),
+(15, 'Rash', 'An area of irritated or swollen skin, often itchy or painful.', 'Mild', 'Can be macular, papular, or mixed.', '2025-01-24');
 
 -- --------------------------------------------------------
 
@@ -336,16 +426,21 @@ CREATE TABLE `treatment` (
 --
 
 INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes`, `Date_Modified`) VALUES
-(1, 'Paracetamol', 'Medication to reduce fever and pain', NULL, '2025-04-12'),
-(2, 'ORS', 'Oral rehydration solution for dehydration', NULL, '2025-04-12'),
-(3, 'Antibiotics', 'Medication to treat bacterial infections', NULL, '2025-04-12'),
-(4, 'Antihypertensive Drugs', 'Medication to lower blood pressure', NULL, '2025-04-12'),
-(5, 'Insulin Therapy', 'Treatment for diabetes management', NULL, '2025-04-12'),
-(6, 'Bronchodilators', 'Medication to open airways in asthma', NULL, '2025-04-12'),
-(7, 'Antimalarial Drugs', 'Medication to treat malaria', NULL, '2025-04-12'),
-(8, 'Bed Rest', 'Physical rest to recover from illness', NULL, '2025-04-12'),
-(9, 'IV Fluids', 'Intravenous fluids for severe dehydration', NULL, '2025-04-12'),
-(10, 'Vaccination', 'Preventive immunization', NULL, '2025-04-12');
+(1, 'Paracetamol', 'Used to reduce fever and mild pain', 'Commonly used for fever and mild discomfort', '2025-05-03'),
+(2, 'Ibuprofen', 'Nonsteroidal anti-inflammatory drug (NSAID), used for pain relief and to reduce inflammation', 'May cause stomach upset if not taken with food', '2025-05-03'),
+(3, 'Antibiotics', 'Used to treat bacterial infections, often prescribed for pneumonia', 'Requires a full course to prevent resistance', '2025-05-03'),
+(4, 'Cough Syrup', 'Helps in reducing coughing', 'Can be used for dry or productive coughs', '2025-05-03'),
+(5, 'Inhaler', 'Used for asthma and other respiratory conditions to help open airways', 'Essential for managing asthma attacks', '2025-05-03'),
+(6, 'Steroids', 'Medications used to reduce inflammation and treat autoimmune conditions', 'Can have side effects with long-term use', '2025-05-03'),
+(7, 'Insulin Therapy', 'Used to manage blood sugar levels in patients with Type 2 Diabetes', 'Requires careful monitoring of blood glucose levels', '2025-05-03'),
+(8, 'Surgery', 'A medical procedure involving an incision to treat various diseases, such as heart disease', 'Only recommended when other treatments fail', '2025-05-03'),
+(9, 'Physical Therapy', 'Treatment to improve movement and manage pain, often used for arthritis', 'Important for rehabilitation and improving mobility', '2025-05-03'),
+(10, 'Oxygen Therapy', 'Providing extra oxygen to patients with respiratory diseases', 'Used for diseases like pneumonia, COPD, and asthma', '2025-05-03'),
+(11, 'Chemotherapy', 'A type of cancer treatment that uses drugs to destroy cancer cells', 'Often accompanied by side effects like nausea and fatigue', '2025-05-03'),
+(12, 'Anti-inflammatory drugs', 'Used to reduce inflammation and manage pain for conditions like arthritis', 'Long-term use may have cardiovascular risks', '2025-05-03'),
+(13, 'Hydration Therapy', 'Fluids given to patients who are dehydrated due to illnesses like malaria or severe diarrhea', 'Hydration is critical for recovery from fluid loss', '2025-05-03'),
+(14, 'Rest and Fluids', 'Basic treatment for viral infections like the common cold, emphasizing rest and hydration', 'May take several days to recover', '2025-05-03'),
+(15, 'Sun Protection', 'Used to treat psoriasis and other skin conditions by preventing skin flare-ups caused by UV exposure', 'Requires regular application of sunscreen', '2025-05-03');
 
 -- --------------------------------------------------------
 
@@ -423,7 +518,7 @@ ALTER TABLE `affected_group`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `Category_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `Category_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `disease`
@@ -441,19 +536,19 @@ ALTER TABLE `diseases_symptom`
 -- AUTO_INCREMENT for table `diseases_treatment`
 --
 ALTER TABLE `diseases_treatment`
-  MODIFY `Diseases_Treatment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `Diseases_Treatment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `symptom`
 --
 ALTER TABLE `symptom`
-  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `treatment`
 --
 ALTER TABLE `treatment`
-  MODIFY `Treatment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `Treatment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables

@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/querys.php';
+require_once '../../admin/querys/disease.php';
 
 $results = []; // Initialize results array
 

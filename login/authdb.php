@@ -25,8 +25,7 @@ class dbLoginConn {
         throw new Exception("Database Error");
 
       } catch(Exception $e) {
-            error_log("Connection failed: " . $e->getMessage());
-            die("Connection Failed: No Database Connected");
+            die("Connection Failed:" . $e->getMessage());
       }
     }
 
@@ -68,16 +67,11 @@ class userCredentialCRUD extends dbLoginConn {
         }
     }
 
-    function SearchUserByUsername($uname) {
+    public function SearchUserByUsername($uname) {
         try {
             $stmt = $this->conn->prepare("Call SearchByUserName(:name);");
             $stmt->execute([':name' => $uname]);
             $temp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if ($temp == null){
-                // echo 'Null';
-                // throw new Exception("No Matched Value");
-                return $temp;
-            }
             return $temp;
             
         } catch (PDOException $e) {

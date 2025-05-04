@@ -11,7 +11,7 @@ class CrudDisease extends dbconnection {
     
     public function read() {
         try {
-            $stmt = $this->conn->prepare("Call ListofDisease;");
+            $stmt = $this->conn->prepare("Call ShowView_list_of_diseases;");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
@@ -113,7 +113,7 @@ class CrudDisease extends dbconnection {
 
     function checkDataById($dataId) {
         try {
-            $stmt = $this->conn->prepare("Call SearchDisByID(:DataID);");
+            $stmt = $this->conn->prepare("Call SearchDiseaseByID(:DataID);");
             $stmt->execute([':DataID' => $dataId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             

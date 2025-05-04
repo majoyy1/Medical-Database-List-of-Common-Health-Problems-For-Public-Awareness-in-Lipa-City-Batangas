@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 require_once 'querys/disease.php';
 require_once 'querys/category.php';
 require_once 'querys/symptoms.php';
@@ -130,3 +133,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </body>
 
 </html>
+
+<?php
+
+require_once '../loginStatus.php';
+
+
+?>

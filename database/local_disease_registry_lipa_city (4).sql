@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 02:11 AM
+-- Generation Time: May 04, 2025 at 11:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -51,10 +51,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckCategoryOfId` (IN `id` INT)   
 
 SELECT category.Category_ID from category WHERE category.Category_ID = id LIMIT 1;
 
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDataById` (IN `id` INT)   BEGIN
-    SELECT Disease_ID FROM disease WHERE Disease_ID = id LIMIT 1;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
@@ -128,13 +124,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `dise
     DEALLOCATE PREPARE stmt;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
-SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
-Left JOIN category as c 
-ON d.Category_ID = c.Category_ID;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
 FROM disease as d
 LEFT JOIN category as cat on cat.Category_ID = d.Category_ID
 WHERE d.Disease_ID = id
@@ -159,6 +149,8 @@ SELECT * FROm category;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_of_diseases` ()  SQL SECURITY INVOKER SELECT * from list_of_diseases$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `testMainDbConnection` ()  DETERMINISTIC SELECT Disease_ID from disease LIMIT 1$$
 
@@ -263,8 +255,7 @@ INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classificat
 (90, 'adasdasd', 'asdasda', 'asdasd', 1, '2025-05-04 00:35:54', ''),
 (92, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:11', 'Test Note'),
 (93, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:13', 'Test Note'),
-(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note'),
-(95, 'last na ito', 'ayaw ko na', 'tamanaaaa', 1, '2025-05-04 00:58:17', '');
+(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note');
 
 -- --------------------------------------------------------
 
@@ -323,10 +314,10 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (39, 14, 8),
 (40, 14, 1),
 (41, 15, 15),
-(55, 95, 1),
-(56, 95, 2),
-(57, 95, 3),
-(58, 95, 4);
+(55, NULL, 1),
+(56, NULL, 2),
+(57, NULL, 3),
+(58, NULL, 4);
 
 -- --------------------------------------------------------
 
@@ -415,6 +406,20 @@ CREATE TABLE `list_disease_symptom` (
 ,`Symptom_Description` text
 ,`Severity` varchar(30)
 ,`Date_Modified` datetime
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `list_of_diseases`
+-- (See below for the actual view)
+--
+CREATE TABLE `list_of_diseases` (
+`Disease_ID` int(11)
+,`Disease_Name` varchar(60)
+,`Description` text
+,`Classification` varchar(40)
+,`Category_Name` varchar(40)
 );
 
 -- --------------------------------------------------------
@@ -514,6 +519,15 @@ INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes
 DROP TABLE IF EXISTS `list_disease_symptom`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_disease_symptom`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Disease_Description`, `d`.`Classification` AS `Classification`, `cat`.`Category_Name` AS `Category`, `d`.`Note` AS `Note`, `s`.`Symptom_Name` AS `Symptom_Name`, `s`.`Description` AS `Symptom_Description`, `s`.`Severity` AS `Severity`, `d`.`Date_Modified` AS `Date_Modified` FROM (((`disease` `d` left join `category` `cat` on(`cat`.`Category_ID` = `d`.`Category_ID`)) left join `diseases_symptom` `ds` on(`ds`.`Disease_ID` = `d`.`Disease_ID`)) left join `symptom` `s` on(`s`.`Symptom_ID` = `ds`.`Symptom_ID`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `list_of_diseases`
+--
+DROP TABLE IF EXISTS `list_of_diseases`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_of_diseases`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Description`, `d`.`Classification` AS `Classification`, `c`.`Category_Name` AS `Category_Name` FROM (`disease` `d` left join `category` `c` on(`d`.`Category_ID` = `c`.`Category_ID`)) ;
 
 -- --------------------------------------------------------
 

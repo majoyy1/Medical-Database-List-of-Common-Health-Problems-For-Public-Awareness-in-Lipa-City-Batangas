@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,5 +75,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
+require_once '../loginStatus.php';
 
 ?>

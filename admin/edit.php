@@ -96,3 +96,7 @@ try {
     </form>
 </body>
 </html>
+
+<?php
+require_once '../loginStatus.php';
+?>

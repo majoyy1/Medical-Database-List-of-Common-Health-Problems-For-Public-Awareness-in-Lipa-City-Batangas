@@ -14,18 +14,21 @@ class dbLoginConn {
 
         $this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbName", $this->username, $this->password);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $test = $this->conn->query("Call testLoginDbConnection;");
-
-        if ($test && $test->fetchColumn()) {
-            // echo "Connection Success";
+        //If the database connection is failed, check if the the db has an item 
+        //it must have at least one item to work
+        $test = $this->conn->prepare("Call testLoginDbConnection;");
+        $test->execute();
+        if ($test->fetchColumn()) {
             return $this->conn;  
+        } else {
+            // echo "Connection Failed";
+            throw new Exception("Connection Failed");
         }
 
-        throw new Exception("Database Error");
+        
 
       } catch(Exception $e) {
-            die("Connection Failed:" . $e->getMessage());
+            die("Connection Failed: " . $e->getMessage());
       }
     }
 

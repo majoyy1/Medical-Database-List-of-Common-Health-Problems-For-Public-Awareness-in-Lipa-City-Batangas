@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 03, 2025 at 05:11 PM
+-- Generation Time: May 04, 2025 at 02:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -35,6 +35,13 @@ INSERT INTO disease(Disease_Name, Description, Classification, Category_ID, Note
 VALUES (dName, description, classification, categoryID, note);
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDiseaseSymptom` (IN `diseaseID` INT, IN `SymptomId` INT)   BEGIN
+
+INSERT INTO diseases_symptom(diseases_symptom.Disease_ID, diseases_symptom.Symptom_ID)
+VALUES (diseaseID, SymptomId);
+
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddSymptom` (IN `Name` VARCHAR(50), IN `Description` TEXT, IN `Severity` VARCHAR(30), IN `note` TEXT)   BEGIN
 INSERT INTO symptom (Symptom_Name, Description, Severity, Note)
 VALUES(Name, Description, Severity, note);
@@ -46,9 +53,18 @@ SELECT category.Category_ID from category WHERE category.Category_ID = id LIMIT 
 
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDataById` (IN `id` INT)   BEGIN
+    SELECT Disease_ID FROM disease WHERE Disease_ID = id LIMIT 1;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
 from list_disease_symptom as s 
 WHERE s.Disease_ID = id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createData` (IN `dName` VARCHAR(60), IN `description` TEXT, IN `classification` VARCHAR(35), IN `categoryID` INT, IN `note` TEXT)   BEGIN
+    INSERT INTO disease (Disease_Name, Description, Classification, Category_ID, Note)
+    VALUES (dName, description, classification, categoryID, note);
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteCategory` (IN `id` INT)   BEGIN
 
@@ -61,39 +77,6 @@ DELETE FROM disease WHERE disease.Disease_ID = ID;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetLastDiseaseID` ()   SELECT * FROM `disease` ORDER by Disease_ID DESC LIMIT 1$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
-SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
-Left JOIN category as c 
-ON d.Category_ID = c.Category_ID;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
-FROM disease as d
-LEFT JOIN category as cat on cat.Category_ID = d.Category_ID
-WHERE d.Disease_ID = id
-LIMIT 1$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GetSymptoms` ()   BEGIN
-    SELECT Symptom_Name FROM symptom ORDER BY Symptom_Name ASC;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `disease_ids` TEXT)   BEGIN
-    -- Convert the comma-separated string into a list of IDs and fetch treatments
-    SET @sql = CONCAT('
-        SELECT 
-            dt.Disease_ID,
-            t.Treatment_Name,
-            t.Description 
-        FROM diseases_treatment dt
-        JOIN treatment t ON dt.Treatment_ID = t.Treatment_ID
-        WHERE dt.Disease_ID IN (', disease_ids, ')');
-
-    -- Prepare and execute the dynamic SQL
-    PREPARE stmt FROM @sql;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPossibleDiseases` (IN `symptom_names` TEXT)   BEGIN
   -- 1) Get all matching diseases
@@ -124,6 +107,39 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetPossibleDiseases` (IN `symptom_n
   WHERE FIND_IN_SET(s.Symptom_Name, symptom_names) > 0;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetSymptoms` ()   BEGIN
+    SELECT Symptom_Name FROM symptom ORDER BY Symptom_Name ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `disease_ids` TEXT)   BEGIN
+    -- Convert the comma-separated string into a list of IDs and fetch treatments
+    SET @sql = CONCAT('
+        SELECT 
+            dt.Disease_ID,
+            t.Treatment_Name,
+            t.Description 
+        FROM diseases_treatment dt
+        JOIN treatment t ON dt.Treatment_ID = t.Treatment_ID
+        WHERE dt.Disease_ID IN (', disease_ids, ')');
+
+    -- Prepare and execute the dynamic SQL
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
+SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
+Left JOIN category as c 
+ON d.Category_ID = c.Category_ID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
+FROM disease as d
+LEFT JOIN category as cat on cat.Category_ID = d.Category_ID
+WHERE d.Disease_ID = id
+LIMIT 1$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByLetter` (IN `searchLetter` VARCHAR(5))   BEGIN
     SELECT Disease_Name, description 
     FROM disease 
@@ -140,23 +156,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM 
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDataById` (IN `id` INT)
-BEGIN
-    SELECT Disease_ID FROM disease WHERE Disease_ID = id LIMIT 1;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `createData` (
-    IN `dName` VARCHAR(60),
-    IN `description` TEXT,
-    IN `classification` VARCHAR(35),
-    IN `categoryID` INT,
-    IN `note` TEXT
-)
-BEGIN
-    INSERT INTO disease (Disease_Name, Description, Classification, Category_ID, Note)
-    VALUES (dName, description, classification, categoryID, note);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
@@ -259,7 +258,13 @@ INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classificat
 (12, 'Rheumatoid Arthritis', 'An autoimmune disease where the immune system attacks the joints, leading to inflammation and deformity.', '', 8, '2025-05-03 22:54:01', NULL),
 (13, 'Multiple Sclerosis', 'An autoimmune disease affecting the central nervous system, leading to muscle weakness and vision problems.', '', 8, '2025-05-03 22:54:01', NULL),
 (14, 'Asthma', 'A chronic respiratory condition where the airways become inflamed and narrowed, leading to breathing difficulties.', '', 11, '2025-05-03 22:54:01', NULL),
-(15, 'Psoriasis', 'A skin disorder that causes red, flaky patches, often on the elbows, knees, and scalp.', '', 14, '2025-05-03 22:54:01', NULL);
+(15, 'Psoriasis', 'A skin disorder that causes red, flaky patches, often on the elbows, knees, and scalp.', '', 14, '2025-05-03 22:54:01', NULL),
+(88, 'asdasdadasdada', 'afasfsd', 'aaaaaaaaaaaaaa', 1, '2025-05-04 00:28:22', ''),
+(90, 'adasdasd', 'asdasda', 'asdasd', 1, '2025-05-04 00:35:54', ''),
+(92, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:11', 'Test Note'),
+(93, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:13', 'Test Note'),
+(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note'),
+(95, 'last na ito', 'ayaw ko na', 'tamanaaaa', 1, '2025-05-04 00:58:17', '');
 
 -- --------------------------------------------------------
 
@@ -317,7 +322,11 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (37, 13, 7),
 (39, 14, 8),
 (40, 14, 1),
-(41, 15, 15);
+(41, 15, 15),
+(55, 95, 1),
+(56, 95, 2),
+(57, 95, 3),
+(58, 95, 4);
 
 -- --------------------------------------------------------
 
@@ -392,6 +401,25 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `list_disease_symptom`
+-- (See below for the actual view)
+--
+CREATE TABLE `list_disease_symptom` (
+`Disease_ID` int(11)
+,`Disease_Name` varchar(60)
+,`Disease_Description` text
+,`Classification` varchar(40)
+,`Category` varchar(40)
+,`Note` text
+,`Symptom_Name` varchar(50)
+,`Symptom_Description` text
+,`Severity` varchar(30)
+,`Date_Modified` datetime
+);
+
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `showalllist`
 -- (See below for the actual view)
 --
@@ -440,7 +468,8 @@ INSERT INTO `symptom` (`Symptom_ID`, `Symptom_Name`, `Description`, `Severity`, 
 (12, 'Diarrhea', 'Loose, watery stools occurring more frequently than usual.', 'Moderate', 'Monitor for fluid loss.', '2025-01-21'),
 (13, 'Abdominal Pain', 'Discomfort in the area between the chest and pelvis.', 'Moderate', 'Etiology can be GI, GU, or other.', '2025-01-22'),
 (14, 'Joint Pain', 'Discomfort arising from any joint of the body.', 'Mild', 'Arthritis or overuse.', '2025-01-23'),
-(15, 'Rash', 'An area of irritated or swollen skin, often itchy or painful.', 'Mild', 'Can be macular, papular, or mixed.', '2025-01-24');
+(15, 'Rash', 'An area of irritated or swollen skin, often itchy or painful.', 'Mild', 'Can be macular, papular, or mixed.', '2025-01-24'),
+(16, 'ttttttttttttt', 'ttttttttttttt', 'ttttttttttttt', '', '2025-05-04');
 
 -- --------------------------------------------------------
 
@@ -487,6 +516,7 @@ DROP TABLE IF EXISTS `list_disease_symptom`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_disease_symptom`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Disease_Description`, `d`.`Classification` AS `Classification`, `cat`.`Category_Name` AS `Category`, `d`.`Note` AS `Note`, `s`.`Symptom_Name` AS `Symptom_Name`, `s`.`Description` AS `Symptom_Description`, `s`.`Severity` AS `Severity`, `d`.`Date_Modified` AS `Date_Modified` FROM (((`disease` `d` left join `category` `cat` on(`cat`.`Category_ID` = `d`.`Category_ID`)) left join `diseases_symptom` `ds` on(`ds`.`Disease_ID` = `d`.`Disease_ID`)) left join `symptom` `s` on(`s`.`Symptom_ID` = `ds`.`Symptom_ID`)) ;
 
 -- --------------------------------------------------------
+
 --
 -- Structure for view `showalllist`
 --
@@ -567,13 +597,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `diseases_treatment`
@@ -585,7 +615,7 @@ ALTER TABLE `diseases_treatment`
 -- AUTO_INCREMENT for table `symptom`
 --
 ALTER TABLE `symptom`
-  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `treatment`

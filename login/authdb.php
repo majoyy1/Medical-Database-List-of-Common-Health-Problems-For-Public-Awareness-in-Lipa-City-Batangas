@@ -3,8 +3,10 @@
 class dbLoginConn {
     private $host = "localhost";
     private $dbName = "login_credentials";
-    private $username = "loginAdmin";
-    private $password = "Admin";
+    // private $username = "loginAdmin";
+    // private $password = "Admin";
+    private $username = "root";
+    private $password = "";
     protected $conn;
 
     function __construct() {
@@ -16,15 +18,15 @@ class dbLoginConn {
         $test = $this->conn->query("Call testLoginDbConnection;");
 
         if ($test && $test->fetchColumn()) {
-            echo "Connection Success";
+            // echo "Connection Success";
             return $this->conn;  
         }
 
         throw new Exception("Database Error");
 
       } catch(Exception $e) {
-        error_log("Connection failed: " . $e->getMessage());
-        die("Connection Failed: No Database Connected");
+            error_log("Connection failed: " . $e->getMessage());
+            die("Connection Failed: No Database Connected");
       }
     }
 

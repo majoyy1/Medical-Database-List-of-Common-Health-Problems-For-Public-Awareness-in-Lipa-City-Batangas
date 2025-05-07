@@ -1,11 +1,54 @@
 <?php
+require_once 'querys/disease.php';
+require_once 'querys/category.php';
+require_once 'querys/symptoms.php';
 
-require_once 'querys.php';
 $categ = new CrudCategory();
 $categResult = $categ->read();
 
-$Disease = new CrudDisease();
+$symptoms = new CrudSymptoms();
+$symptomsResult = $symptoms->read();
 
+$disease = new CrudDisease();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (isset($_POST['DiName'])  && $_GET['request'] == 1) {
+        
+        echo "<script>
+        console.log(" . $_POST['DiName'] . ");
+        console.log(" . $_POST['Description'] . ");
+        console.log(" . $_POST['Classification'] . ");
+        console.log(" . $_POST['Category'] . ");
+        console.log(" . $_POST['Note'] . ");
+        console.log(" . $_POST['Symptoms'] . ");
+            </script>";
+
+        $dName = $disease->cleanData($_POST['DiName']);
+        $dDescription = $disease->cleanData($_POST['Description']);
+        $dClasssif = $disease->cleanData($_POST['Classification']);
+        $dCat = $disease->cleanData($_POST['Category']);
+        $dNote = $disease->cleanData($_POST['Note']);
+        $symp = $_POST['Symptoms'];
+        
+        if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote, $symp)) {
+            $message = "The data has been added successfully!";
+
+            echo "<script>
+            alert('$message');
+            window.location.href = 'list.php?success=1';
+            </script>";
+        } else {
+            $message = "Error Adding Data";
+            $redirect_url = "addForm.php";
+
+            echo "<script>
+            alert('$message');
+            window.location.href = '';
+            </script>";
+        }
+        
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -14,21 +57,25 @@ $Disease = new CrudDisease();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Disease</title>
+    <link rel="stylesheet" href="css/addForm.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <h2>Add Disease Data</h2>
-    <form method="post">
-
-        <label for="name">Disease Name:</label>
+    <form action="addForm.php?request=1" method="post" class="edit-form">
+        <h2>Add Disease Data</h2>
+        <label for="Diname">Disease Name:</label>
         <input type="text" id="DiName" name="DiName" required><br><br>
 
-        <label for="Description">Description:</label>
+        <label for="description">Description:</label>
         <textarea name="Description" id="description" required></textarea><br><br>
         
-        <label for="Classification">Classification</label>
+        <label for="classification">Classification</label>
         <input type="text" id="classification" name="Classification" required><br><br>
 
-        <label for="Category">Category:</label>
+        <label for="category">Category:</label>
         <select id="category" name="Category">
             <?php
             if (count($categResult) > 0) {
@@ -41,12 +88,54 @@ $Disease = new CrudDisease();
             ?>
         </select><br><br>
         
+        <!-- Multiple-select dropdown -->
+        <label for="symptoms">Symptoms:</label>
+        <select id="symptoms" name="Symptoms[]" multiple>
+            <?php
+            if (count($symptomsResult) > 0) {
+                foreach ($symptomsResult as $row) {
+                    echo "<option value='" . $row["Symptom_ID"] . "'>" . $row["Symptom_Name"] . "</option>";
+                }
+            } else {
+                echo "<option value='NULL'>No Symptoms Available</option>";
+            }
+            ?>
+        </select>
+        <small>Hold Ctrl/Cmd to select multiple.</small><br>
+
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='addSymptom.php'">Add Symptom</button>
+        
         <label for="Note">Note:</label>
         <textarea id="note" name="Note"></textarea><br><br>
 
         <button type="submit" name="addData">Submit</button>
         <button type="reset">Reset</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Back</button>
 
     </form>
+    
+    <script>
+        $('form.edit-form').on('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to submit this form?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, submit it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the form
+                    this.submit();
+                }
+            });
+        });
+</script>
+
 </body>
+
 </html>

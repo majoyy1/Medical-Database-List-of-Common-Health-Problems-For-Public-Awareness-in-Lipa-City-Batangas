@@ -24,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $dNote = $disease->cleanData($_POST['Note']);
         $symp = $_POST['Symptoms'];
 
-        
         if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote, $symp)) {
             $message = "The data has been added successfully!";
 

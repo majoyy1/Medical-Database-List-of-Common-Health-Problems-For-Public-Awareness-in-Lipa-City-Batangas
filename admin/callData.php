@@ -1,6 +1,8 @@
 <?php
 require_once 'querys/disease.php';
 require_once 'querys/symptoms.php';
+require_once 'querys/treatment.php';
+
 header('Content-Type: application/json');
 
 try {
@@ -21,6 +23,12 @@ try {
             echo json_encode(['dataDisease' => $result, 'symptomsData' => $symptomsData], JSON_PRETTY_PRINT);
             
         } 
+        // elseif (){
+        //     $trate = new CrudTreatment();
+        //     $results = $trate->read();
+        //     echo json_encode(['treatmentlist' => $result], JSON_PRETTY_PRINT);  
+
+        // }
         else {
             echo json_encode(['error' => 'Error requesting Data.']);
         }

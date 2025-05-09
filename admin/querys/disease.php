@@ -101,12 +101,11 @@ class CrudDisease extends dbconnection {
             echo $Id;
     
             $stmt = $this->conn->prepare("Call UpdateDiseaseByID(:DataID, :DisName, :description, :classification, :categoryID, :note);");
-            $stmt->execute(
-                [':DataID' => $Id, ':DisName' => $disName, ':description' => $description, 
+            $stmt->execute([':DataID' => $Id, ':DisName' => $disName, ':description' => $description, 
                 ':classification' => $classification, ':categoryID' => $CategoryID, ':note' => $note]);
             return 1;
         } catch (PDOException $e) {
-            error_log("Error Modifying data: " . $e->getMessage());
+            die("Error Modifying data: " . $e->getMessage());
             return 0; // Return false on failure
         }
     }

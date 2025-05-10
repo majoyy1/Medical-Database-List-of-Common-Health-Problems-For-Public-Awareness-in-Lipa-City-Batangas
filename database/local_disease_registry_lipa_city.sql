@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 11:31 AM
+-- Generation Time: May 10, 2025 at 10:04 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -53,7 +53,11 @@ SELECT category.Category_ID from category WHERE category.Category_ID = id LIMIT 
 
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomById` (IN `id` INT)   BEGIN
+SELECT * from symptom WHERE symptom.Symptom_ID = id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfIdByDisease` (IN `id` INT)   SELECT *
 from list_disease_symptom as s 
 WHERE s.Disease_ID = id$$
 
@@ -146,6 +150,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM 
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfTreatment` ()   BEGIN
+SELECT * From treatment;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
@@ -255,7 +263,8 @@ INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classificat
 (90, 'adasdasd', 'asdasda', 'asdasd', 1, '2025-05-04 00:35:54', ''),
 (92, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:11', 'Test Note'),
 (93, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:13', 'Test Note'),
-(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note');
+(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note'),
+(96, 'a', 'b', 'c', 1, '2025-05-10 15:10:31', '');
 
 -- --------------------------------------------------------
 
@@ -317,7 +326,9 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (55, NULL, 1),
 (56, NULL, 2),
 (57, NULL, 3),
-(58, NULL, 4);
+(58, NULL, 4),
+(61, 96, 3),
+(62, 96, 4);
 
 -- --------------------------------------------------------
 
@@ -611,13 +622,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `diseases_treatment`

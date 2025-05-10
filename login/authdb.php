@@ -3,10 +3,8 @@
 class dbLoginConn {
     private $host = "localhost";
     private $dbName = "login_credentials";
-    // private $username = "loginAdmin";
-    // private $password = "Admin";
-    private $username = "root";
-    private $password = "";
+    private $username = "loginAdmin";
+    private $password = "Admin";
     protected $conn;
 
     function __construct() {

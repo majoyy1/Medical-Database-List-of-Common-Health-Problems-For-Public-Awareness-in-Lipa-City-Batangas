@@ -5,16 +5,17 @@ require_once "querys/treatment.php";
 
 $distemp = new CrudDisease();
 $categ = new CrudCategory();
-
 $treatment = new CrudTreatment();
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['request']) && $_GET['request'] === 'Treatment') {
+try {
+    //Handler for getting treatment data
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['request']) && $_GET['request'] === 'Treatment') {
     $result = $treatment->read();
     echo json_encode(['dataTreatment' => $result]);
     exit;
-}
+    }
 
-try {
+
     // Fetch treatments for DataTable
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['request']) && $_GET['request'] === 'Treatment') {
         $result = $treatment->read();

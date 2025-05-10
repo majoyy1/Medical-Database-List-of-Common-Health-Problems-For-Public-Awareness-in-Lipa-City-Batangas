@@ -53,14 +53,11 @@ session_start();
     </table>
     <!-- //addForm -->
     <div class="formContainer">
-        <form class="addForm" action="requests.php?request=add" method="POST" onsubmit="return confirm('Are you sure to continue ADD Treatment?');">
-            <label for="categname">Treatment:</label>
-            <input type="text" id="categname" name="TreatmentName" required><br><br>
-            
-            <label for="des">Description</label>
-            <input type="text" id="des" name="Description" required><br><br>
+        <form class="addForm" action="addTreatment.php" method="POST">
+            <label for="TreatmentName">Treatment:</label>
             <button type="submit">Add Treatment</button>
         </form>
+
 
         <!-- Edit Form -->
         <form class="editForm" action="requests.php?request=edit" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Treatment?');">

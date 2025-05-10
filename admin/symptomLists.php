@@ -45,35 +45,20 @@ session_start();
 
     <div style="text-align: center;">
         <h3 class="title">Symptom Lists</h3>
+        <!-- Add Symptom Button -->
+        <a href="addSymptom.php" class="btn btn-success mb-3">Add Symptom</a>
     </div>
     <table id="SymptomTable" class="display-table">
         <thead>
-            <tr>
-            </tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Severity</th>
+            <th>Note</th>
+            <th>Date Added</th>
+            <th>Actions</th>
         </thead>
     </table>
-    <!-- Add Form -->
-    <div class="formContainer">
-        <form class="addForm" action="addSymptom.php" method="POST">
-            <label for="symptomName">Symptom:</label>
-            <button type="submit">Add Symptom</button>
-        </form>
-
-        <!-- Edit Form -->
-        <form class="editForm" action="editSymptom.php" method="GET" onsubmit="return confirm('Are you sure to continue EDIT Symptom?');">
-            <label for="editID">ID:</label>
-            <input type="text" id="editdata" name="editID" required>
-
-            <button type="submit">Edit</button>
-        </form>
-
-        <!-- Delete Form -->
-        <form class="deleteForm" action="requests.php" method="GET" onsubmit="return confirm('Delete this Symptom?');">
-            <label for="DeleteSymptomID">ID:</label>
-            <input type="text" id="DeleteSymptomID" name="DeleteSymptomID">
-            <button type="submit">DELETE</button>
-        </form><br>
-    </div>
 
     <script>
     $(document).ready(function() {
@@ -91,8 +76,23 @@ session_start();
                 { data: 'Description', title: 'Description' },
                 { data: 'Severity', title: 'Severity' },
                 { data: 'Note', title: 'Note' },
-                { data: 'DateCreated', title: 'Date Added' }
-
+                { data: 'DateCreated', title: 'Date Added' },
+                {
+                    data: null,
+                    title: 'Actions',
+                    render: function(data, type, row) {
+                        return `
+                            <form class="editForm" action="editSymptom.php" method="GET" style="display:inline;">
+                                <input type="hidden" name="editID" value="${row.Symptom_ID}">
+                                <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                            </form>
+                            <form class="deleteForm" action="requests.php" method="GET" style="display:inline;" onsubmit="return confirm('Delete this Symptom?');">
+                                <input type="hidden" name="DeleteSymptomID" value="${row.Symptom_ID}">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        `;
+                    }
+                }
             ]
         });
     });

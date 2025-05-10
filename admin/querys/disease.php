@@ -20,7 +20,7 @@ class CrudDisease extends dbconnection {
         }
     }
 
-    public function createData($DisName, $description, $classification, $categoryID, $note, $symptomIDs) {
+    public function createData($DisName, $description, $classification, $categoryID, $note, $symptomIDs, $treatmentIDs) {
         try {
             // Validate inputs
             if (empty($DisName) || empty($classification) || empty($categoryID)) {
@@ -52,6 +52,16 @@ class CrudDisease extends dbconnection {
                     }
                     $stmt = $this->conn->prepare("CALL AddDiseaseSymptom(:diseaseID, :symptomID);");
                     $stmt->execute([':diseaseID' => $diseaseID,':symptomID' => $symptomID]);
+                }
+            }
+
+            if (!empty($IDs) && is_array($treatmentIDs)) {
+                foreach ($treatmentIDs as $treatmentID) {
+                    if (!is_numeric($symptomID)) {
+                        throw new Exception("Invalid Symptom ID: $treatmentID");
+                    }
+                    $stmt = $this->conn->prepare("CALL AddDiseaseTreatment(:diseaseID, :treatmentID);");
+                    $stmt->execute([':diseaseID' => $diseaseID,':treatmentID' => $treatmentID]);
                 }
             }
 

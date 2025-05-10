@@ -55,17 +55,17 @@ session_start();
     <div class="formContainer">
         <form class="addForm" action="requests.php?request=add" method="POST" onsubmit="return confirm('Are you sure to continue ADD Category?');">
             <label for="categname">Category:</label>
-            <input type="text" id="categname" name="CategoryName" required><br><br>
+            <input type="text" id="categname" name="CategoryName" placeholder="Enter category name" required><br><br>
             
             <label for="des">Description</label>
-            <input type="text" id="des" name="Description" required><br><br>
+            <input type="text" id="des" name="Description" placeholder="Category description" required><br><br>
             <button type="submit">Add Category</button>
         </form>
 
         <!-- Edit Form -->
         <form class="editForm" action="requests.php?request=editCategory" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Category?');">
             <label for="editID">ID:</label>
-            <input type="input" id="editdata" name="editID" required>
+            <input type="input" id="editdata" name="editID" placeholder="ID">
 
             <label for="editname">Category:</label>
             <input type="input" id="editname" name="CategoryName" required><br><br>
@@ -79,7 +79,7 @@ session_start();
         <!-- Delete Form -->
         <form class="deleteForm" action="requests.php" method="GET" onsubmit="return confirm('Delete this Category?');">
             <label for="DeleteCatID">ID:</label>
-            <input type="text" id="DeleteCatID" name="DeleteCatID">
+            <input type="text" id="DeleteCatID" name="DeleteCatID" placeholder="ID">
             <button type="submit" id="DeleteCatID">DELETE</button>
         </form><br>
     </div>

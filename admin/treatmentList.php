@@ -5,11 +5,11 @@ session_start();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--DataTables CSS-->
+    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
-    <!--jQuery -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!--DataTables JS-->
+    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <!-- Bootstrap CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -24,6 +24,7 @@ session_start();
     <title>Treatment Data</title>
 </head>
 <body>
+    
     <!-- Bootstrap Nav-Pills -->
     <ul class="nav nav-pills justify-content-center bg-light py-3">
         <li class="nav-item">
@@ -46,33 +47,24 @@ session_start();
     <div style="text-align: center;">
         <h3 class="title">Treatment Lists</h3>
     </div>
-    <table id="TreatmentTable" class="display-table">
-        <thead>
-            <th></th>
-        </thead>
-    </table>
-    <!-- //addForm -->
+
+    <!-- Add Form -->
     <div class="formContainer">
         <form class="addForm" action="addTreatment.php" method="POST">
             <label for="TreatmentName">Treatment:</label>
             <button type="submit">Add Treatment</button>
         </form>
-
-
-        <!-- Edit Form -->
-        <form class="editForm" action="editTreatment.php" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Treatment?');">
-            <label for="editID">ID:</label>
-            <input type="input" id="editdata" name="editID" required>
-            <button type="submit">Edit</button>
-        </form>
-
-        <!-- Delete Form -->
-        <form class="deleteForm" action="requests.php" method="GET" onsubmit="return confirm('Delete this Treatment?');">
-            <label for="DeleteCatID">ID:</label>
-            <input type="text" id="DeleteCatID" name="DeleteCatID">
-            <button type="submit" id="DeleteCatID">DELETE</button>
-        </form><br>
     </div>
+    
+    <table id="TreatmentTable" class="display-table">
+        <thead>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </thead>
+    </table>
 
     <script>
     $(document).ready(function() {
@@ -81,18 +73,40 @@ session_start();
             ajax: {
                 url: 'requests.php',
                 method: 'GET',
-                data: {request: 'Treatment'},
+                data: { request: 'Treatment' },
                 dataSrc: 'dataTreatment'
             },
             columns: [
                 { data: 'Treatment_ID', title: 'ID' },
                 { data: 'Treatment_Name', title: 'Name' },
                 { data: 'Description', title: 'Description' },
-                { data: 'Notes', title: 'Notes' }
+                { data: 'Notes', title: 'Notes' },
+                {
+                    data: null,
+                    title: 'Actions',
+                    render: function(data, type, row) {
+                        return `
+                            <button class="btn btn-primary btn-sm edit-btn" data-id="${row.Treatment_ID}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${row.Treatment_ID}">Delete</button>
+                        `;
+                    }
+                }
             ]
         });
 
-       
+        // Handle Edit Button Click
+        $('#TreatmentTable').on('click', '.edit-btn', function() {
+            const id = $(this).data('id');
+            window.location.href = `editTreatment.php?editID=${id}`;
+        });
+
+        // Handle Delete Button Click
+        $('#TreatmentTable').on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            if (confirm('Are you sure you want to delete this treatment?')) {
+                window.location.href = `requests.php?DeletetrtID=${id}`;
+            }
+        });
     });
     </script>
 </body>
@@ -108,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'TreatmentList.php';
+                window.location.href = 'treatmentList.php';
             });
         </script>";
     } elseif (isset($_GET['error'])) {
@@ -119,10 +133,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
                 icon: 'error',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'TreatmentList.php';
+                window.location.href = 'treatmentList.php';
             });
         </script>";
-    } elseif($_GET['success'] == 2) {
+    } elseif ($_GET['success'] == 2) {
         echo "<script>
             Swal.fire({
                 title: 'Success!',
@@ -130,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'TreatmentList.php';
+                window.location.href = 'treatmentList.php';
             });
         </script>";
     }

@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    window.location.href = 'addForm.php'; // Redirect to the addForm page
+                    window.location.href = 'symptomLists.php'; // Redirect to the addForm page
                 });
             </script>";
         } else {

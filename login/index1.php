@@ -1,59 +1,63 @@
 <?php
+session_start();
 require_once "encryption.php";
 $security = new encryptionWork();
 
-$loginSuccess = false;
-$registerSuccess = false;
-$errorMsg = "";
 
-//Login Request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['uname']) && isset($_POST['pass'])) {
+// Handle logout first
+if (isset($_GET['logout']) && $_GET['logout'] == 1) {
         
-        try {
-            if ( $security->verifyInputCredentials($_POST['uname'], $_POST['pass'])){
-                echo "Login Success! <br>";
-                $loginSuccess = true;
-                $_SESSION['username'] = htmlspecialchars($_POST['uname']);
-            } else {
-                throw new Exception("Login Failed!");
-            }
-           
-        } catch (Exception $er) {
-            $errorMsg = $er->getMessage();
-        }
-    }
+    $_SESSION = array();
+    session_destroy();
+    header("Location: index1.php");
+    exit;
+}
 
-    if (isset($_POST['unameReg']) && isset($_POST['passReg'])) {
-        try {
-            $security->AddUsertoDatabase($_POST['unameReg'], $_POST['passReg']);
-            $registerSuccess = true;
-        } catch (Exception $er) {
-            $errorMsg = $er->getMessage();
-        }
-    }
+// Initialize loginstatus if not set
+if (!isset($_SESSION['loginstatus'])) {
+    $_SESSION['loginstatus'] = 0;
+}
+
+// Display any session messages
+if (isset($_SESSION['registration_success'])) {
+    echo '<script>
+    Swal.fire({
+        title: "Success!",
+        text: "'.htmlspecialchars($_SESSION['registration_success']).'",
+        icon: "success",
+        confirmButtonText: "OK"
+    });
+    </script>';
+    unset($_SESSION['registration_success']);
+}
+
+if (isset($_SESSION['registration_error'])) {
+    echo '<script>
+    Swal.fire({
+        title: "Error!",
+        text: "'.htmlspecialchars($_SESSION['registration_error']).'",
+        icon: "error",
+        confirmButtonText: "OK"
+    });
+    </script>';
+    unset($_SESSION['registration_error']);
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Authenticator</title>
-
+    <link rel="icon" href="../logo.png" type="image/png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <!-- Bootstrap Bundle JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
-
 <div class="container py-5">
     <div class="row justify-content-center">
         <!-- Login Form -->
@@ -61,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h3 class="card-title text-center mb-4">Login</h3>
-                    <form action="index1.php" method="post">
+                    <form action="index1.php" method="post" id="loginForm">
                         <div class="mb-3">
                             <label for="uname" class="form-label">Username</label>
-                            <input type="text" class="form-control" name="uname" id="uname" placeholder="usename" required>
+                            <input type="text" class="form-control" name="uname" id="uname" placeholder="username" required>
                         </div>
                         <div class="mb-3">
                             <label for="pass" class="form-label">Password</label>
@@ -81,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h3 class="card-title text-center mb-4">Register</h3>
-                    <form action="index1.php" method="post">
+                    <form action="index1.php" method="post" id="registerForm">
                         <div class="mb-3">
                             <label for="unameReg" class="form-label">Username</label>
                             <input type="text" class="form-control" name="unameReg" id="unameReg" required>
@@ -98,36 +102,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<?php if ($loginSuccess): ?>
-<script>
-Swal.fire({
-    icon: 'success',
-    title: 'Login Successful!',
-    text: "Hello, <?= htmlspecialchars($_SESSION['username']) ?>",
-    confirmButtonColor: '#3085d6'
-}).then(() => {
-                window.location.href = '../admin/list.php';
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Login handler
+    if (isset($_POST['uname']) && isset($_POST['pass'])) {
+        try {
+            if ($security->verifyInputCredentials($_POST['uname'], $_POST['pass'])) {
+                $_SESSION['loginstatus'] = 1;                
+                $_SESSION['username'] = htmlspecialchars($_POST['uname']);
+                
+                echo '<script>
+                Swal.fire({
+                    title: "Login Successful!",
+                    text: "Welcome back, '.htmlspecialchars($_POST['uname']).'",
+                    icon: "success",
+                    confirmButtonText: "Continue"
+                }).then(() => {
+                    window.location.href = "../admin/list.php";
+                });
+                </script>';
+                exit;
+            } else {
+                throw new Exception("Invalid username or password");
+            }
+        } catch (Exception $er) {
+            echo '<script>
+            Swal.fire({
+                title: "Login Failed!",
+                text: "'.htmlspecialchars($er->getMessage()).'",
+                icon: "error",
+                confirmButtonText: "Try Again"
             });
-</script>
-<?php elseif ($registerSuccess): ?>
-<script>
-Swal.fire({
-    icon: 'success',
-    title: 'Registration Successful!',
-    text: 'You can now log in.',
-    confirmButtonColor: '#28a745'
-});
-</script>
-<?php elseif (!empty($errorMsg)): ?>
-<script>
-Swal.fire({
-    icon: 'error',
-    title: 'Error',
-    text: <?= json_encode($errorMsg) ?>,
-    confirmButtonColor: '#dc3545'
-});
-</script>
-<?php endif; ?>
-
+            </script>';
+            exit;
+        }
+    }
+    
+    // Registration handler
+    if (isset($_POST['unameReg']) && isset($_POST['passReg'])) {
+        try {
+            $username = trim($_POST['unameReg']);
+            $password = trim($_POST['passReg']);
+            
+            if (empty($username) || empty($password)) {
+                throw new Exception("Username and password cannot be empty");
+            }
+            
+            $isSuccess = $security->AddUsertoDatabase($username, $password);
+            
+            if ($isSuccess === true) {
+                $_SESSION['registration_success'] = "Registration successful! Please log in.";
+                echo '<script>
+                Swal.fire({
+                    title: "Success!",
+                    text: "Registration successful! Please log in.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    window.location.href = "index1.php";
+                });
+                </script>';
+                exit;
+            } else {
+                throw new Exception($isSuccess);
+            }
+        } catch (Exception $er) {
+            echo '<script>
+            Swal.fire({
+                title: "Registration Error!",
+                text: "'.htmlspecialchars($er->getMessage()).'",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            </script>';
+            exit;
+        }
+    }
+}
+?>
 </body>
 </html>

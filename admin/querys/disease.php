@@ -3,14 +3,15 @@ require_once 'connection.php';
 
 //Disease CRUD
 class CrudDisease extends dbconnection {
-
+    public $db;
     function __construct(){
         parent::__construct();
+        $this->db = $this->getConnection();
     }
     
     public function read() {
         try {
-            $stmt = $this->conn->prepare("Call ListofDisease;");
+            $stmt = $this->conn->prepare("Call ShowView_list_of_diseases;");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
@@ -19,43 +20,69 @@ class CrudDisease extends dbconnection {
         }
     }
 
-    public function createData($DisName, $description, $classification, $categoryID, $note, $symptomIDs) {
+    public function createData($DisName, $description, $classification, $categoryID, $note, $symptomIDs, $treatmentIDs) {
         try {
-            $stmt = $this->conn->prepare("CALL AddDisease(:DisName, :description, :classification, :categoryID, :note);");
-            $stmt->execute([':DisName' => $DisName, ':description' => $description, ':classification' => $classification, ':categoryID' => $categoryID, ':note' => $note]);
-
-            $createdID = $this->getCreatedID();
-            if (!empty($createdID) && isset($createdID[0]['Disease_ID'])) {
-                $diseaseID = $createdID[0]['Disease_ID'];
-                
-
-                foreach ($symptomIDs as $symptomID) {
-                    $stmt = $this->conn->prepare("CALL AddDiseaseSymptom(:diseaseID, :symptomID);");
-                    $stmt->execute([':diseaseID' => $diseaseID, ':symptomID' => $symptomID]);
-                    echo "<script>console.log('Created Disease ID: " . $diseaseID . "');</script>";
-                }
-            } else {
-                throw new Exception("Failed to retrieve the created disease ID.");
+            // Validate inputs
+            if (empty($DisName) || empty($classification) || empty($categoryID)) {
+                throw new Exception("Disease Name, Classification, and Category ID are required.");
             }
 
-            return 1;
+            // Insert the disease
+            $stmt = $this->conn->prepare("CALL AddDisease(:DisName, :description, :classification, :categoryID, :note);");
+            $stmt->execute([
+                ':DisName' => $DisName,
+                ':description' => $description,
+                ':classification' => $classification,
+                ':categoryID' => $categoryID,
+                ':note' => $note
+            ]);
+
+            // Get the created Disease ID
+            $createdID = $this->getCreatedID();
+            if (empty($createdID) || !isset($createdID[0]['Disease_ID'])) {
+                throw new Exception("Failed to retrieve the created Disease ID.");
+            }
+            $diseaseID = $createdID[0]['Disease_ID'];
+
+            // Insert symptoms if provided
+            if (!empty($symptomIDs) && is_array($symptomIDs)) {
+                foreach ($symptomIDs as $symptomID) {
+                    if (!is_numeric($symptomID)) {
+                        throw new Exception("Invalid Symptom ID: $symptomID");
+                    }
+                    $stmt = $this->conn->prepare("CALL AddDiseaseSymptom(:diseaseID, :symptomID);");
+                    $stmt->execute([':diseaseID' => $diseaseID,':symptomID' => $symptomID]);
+                }
+            }
+
+            if (!empty($IDs) && is_array($treatmentIDs)) {
+                foreach ($treatmentIDs as $treatmentID) {
+                    if (!is_numeric($symptomID)) {
+                        throw new Exception("Invalid Symptom ID: $treatmentID");
+                    }
+                    $stmt = $this->conn->prepare("CALL AddDiseaseTreatment(:diseaseID, :treatmentID);");
+                    $stmt->execute([':diseaseID' => $diseaseID,':treatmentID' => $treatmentID]);
+                }
+            }
+
+            return 1; // Success
         } catch (PDOException $e) {
-            error_log("Error creating disease: " . $e->getMessage());
-            return 0;
+            error_log("Database error creating disease: " . $e->getMessage());
+            return 0; // Failure
         } catch (Exception $e) {
-            error_log("Error: " . $e->getMessage());
-            return 0;
+            error_log("Error creating disease: " . $e->getMessage());
+            return 0; // Failure
         }
     }
 
     function getCreatedID() {
         try {
-            $stmt = $this->conn->prepare("Call GetLastDiseaseID;");
+            $stmt = $this->conn->prepare("CALL GetLastDiseaseID();");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
         } catch (PDOException $e) {
-            die("Error fetching data: " . $e->getMessage());
+            error_log("Error fetching last Disease ID: " . $e->getMessage());
+            return [];
         }
     }
 
@@ -84,19 +111,18 @@ class CrudDisease extends dbconnection {
             echo $Id;
     
             $stmt = $this->conn->prepare("Call UpdateDiseaseByID(:DataID, :DisName, :description, :classification, :categoryID, :note);");
-            $stmt->execute(
-                [':DataID' => $Id, ':DisName' => $disName, ':description' => $description, 
+            $stmt->execute([':DataID' => $Id, ':DisName' => $disName, ':description' => $description, 
                 ':classification' => $classification, ':categoryID' => $CategoryID, ':note' => $note]);
             return 1;
         } catch (PDOException $e) {
-            error_log("Error Modifying data: " . $e->getMessage());
+            die("Error Modifying data: " . $e->getMessage());
             return 0; // Return false on failure
         }
     }
 
     function checkDataById($dataId) {
         try {
-            $stmt = $this->conn->prepare("Call SearchDisByID(:DataID);");
+            $stmt = $this->conn->prepare("Call SearchDiseaseByID(:DataID);");
             $stmt->execute([':DataID' => $dataId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             

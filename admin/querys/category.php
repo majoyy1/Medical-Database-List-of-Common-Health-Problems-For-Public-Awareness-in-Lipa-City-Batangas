@@ -37,6 +37,7 @@ class CrudCategory extends dbconnection {
 
     function updateCategory($categoryID, $categoryName, $description) {
         try {
+            
             $stmt = $this->conn->prepare("Call UpdateCategoryByID(:categoryID, :categoryName, :description);");
             $stmt->execute([':categoryID' => $categoryID, ':categoryName' => $categoryName, ':description' => $description]);
             return 1;
@@ -55,6 +56,7 @@ class CrudCategory extends dbconnection {
             
         } catch (PDOException $e) {
             die("Error Modifiying data: " . $e->getMessage());
+            return 0;
         }
     }
 

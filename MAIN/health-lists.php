@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/querys.php';
+require_once '..\admin\querys\disease.php';
 
 $results = []; // Initialize results array
 
@@ -36,6 +36,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Health Topics A-Z</title>
+    <link rel="icon" href="../logo.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -92,11 +93,16 @@ try {
                             li.className = "bg-white p-4 rounded shadow-md hover:shadow-lg transition";
                             li.innerHTML = `
                                 <h2 class='text-xl font-bold text-blue-700'>${topic.Disease_Name}</h2>
-                                <p class='text-gray-700 mt-1'>${topic.Description || 'No description available'}</p>
+                                <p class='text-gray-700 mt-1'>${topic.Description ? topic.Description : 'No description available'}</p>
                             `;
                             list.appendChild(li);
                         });
                     }
+                })
+                .catch(error => {
+                    console.error('Error fetching topics:', error);
+                    const list = document.getElementById('results');
+                    list.innerHTML = '<li class="text-center text-red-500">An error occurred while fetching data.</li>';
                 });
         }
 

@@ -50,6 +50,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Disease</title>
+    <link rel="icon" href="../logo.png" type="image/png">
 
     <link rel="stylesheet" href="css/form.css">
 </head>
@@ -87,12 +88,14 @@ try {
         <button type="submit" name="addData">Submit</button>
         <button type="reset">Reset</button>
         <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Back</button>
-    </form>
-
-    <!-- Delete Button Form -->
+    
+            <!-- Delete Button Form -->
     <form class="delete-form" action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
         <input type="hidden" id="DiName" name="DeleteID" value="<?php echo isset($diseaseData['Disease_ID']) ? htmlspecialchars($diseaseData['Disease_ID']) : ''; ?>">
         <button type="submit" class="delete-button">DELETE</button>
     </form>
+    </form>
+
+
 </body>
 </html>

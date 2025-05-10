@@ -1,7 +1,12 @@
 <?php
+
+session_start();
+
 require_once 'querys/disease.php';
 require_once 'querys/category.php';
 require_once 'querys/symptoms.php';
+require_once 'querys/treatment.php';
+
 
 $categ = new CrudCategory();
 $categResult = $categ->read();
@@ -9,41 +14,32 @@ $categResult = $categ->read();
 $symptoms = new CrudSymptoms();
 $symptomsResult = $symptoms->read();
 
+$treatment = new CrudTreatment();
+$treatmentResult = $treatment->read();
+
 $disease = new CrudDisease();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['DiName'])  && $_GET['request'] == 1) {
         
-        echo "<script>
-        console.log(" . $_POST['DiName'] . ");
-        console.log(" . $_POST['Description'] . ");
-        console.log(" . $_POST['Classification'] . ");
-        console.log(" . $_POST['Category'] . ");
-        console.log(" . $_POST['Note'] . ");
-        console.log(" . $_POST['Symptoms'] . ");
-            </script>";
-
         $dName = $disease->cleanData($_POST['DiName']);
         $dDescription = $disease->cleanData($_POST['Description']);
         $dClasssif = $disease->cleanData($_POST['Classification']);
         $dCat = $disease->cleanData($_POST['Category']);
         $dNote = $disease->cleanData($_POST['Note']);
         $symp = $_POST['Symptoms'];
-        
-        if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote, $symp)) {
-            $message = "The data has been added successfully!";
+        $treat = $_POST['Treatment'];
 
-            echo "<script>
-            alert('$message');
-            window.location.href = 'list.php?success=1';
-            </script>";
+        if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote ?? '', $symp, $treat)) {
+            $message = "The data has been added successfully!";
+            header('Location: list.php?success=1');
+            exit;
         } else {
             $message = "Error Adding Data";
-            $redirect_url = "addForm.php";
-
+            
             echo "<script>
             alert('$message');
-            window.location.href = '';
+            window.location.href = 'addForm.php';
             </script>";
         }
         
@@ -58,6 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Disease</title>
     <link rel="stylesheet" href="css/addForm.css">
+    <link rel="icon" href="../logo.png" type="image/png">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -103,10 +100,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </select>
         <small>Hold Ctrl/Cmd to select multiple.</small><br>
 
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='addSymptom.php'">Add Symptom</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='addSymptom.php'">Add Symptom</button><br>
         
+        <!-- Multiple-select dropdown -->
+        <label for="treatment">Treatment:</label>
+        <select id="treatment" name="Treatment[]" multiple>
+            <?php
+            if (count($treatmentResult) > 0) {
+                foreach ($treatmentResult as $row) {
+                    echo "<option value='" . $row["Treatment_ID"] . "'>" . $row["Treatment_Name"] . "</option>";
+                }
+            } else {
+                echo "<option value='NULL'>No Treatment Available</option>";
+            }
+            ?>
+        </select>
+        <small>Hold Ctrl/Cmd to select multiple.</small><br>
+
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='addTreatment.php'">Add Treatment</button>
+
+
         <label for="Note">Note:</label>
         <textarea id="note" name="Note"></textarea><br><br>
+
+        
 
         <button type="submit" name="addData">Submit</button>
         <button type="reset">Reset</button>
@@ -139,3 +156,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </body>
 
 </html>
+
+<?php
+
+require_once '../loginStatus.php';
+
+
+?>

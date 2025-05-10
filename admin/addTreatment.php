@@ -13,6 +13,7 @@ session_start();
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/addSymptomForm.css">
+    <link rel="icon" href="../logo.png" type="image/png">
 </head>
 <body>
     <div class="container">

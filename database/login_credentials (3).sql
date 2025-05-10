@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 25, 2025 at 08:13 AM
+-- Generation Time: May 04, 2025 at 11:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -54,15 +54,6 @@ CREATE TABLE `user` (
   `UserRole` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`user_ID`, `username`, `encryption`, `DateCreated`, `UserRole`) VALUES
-(1000128, 'Admin', 'root', '2025-04-24 18:50:34', 2),
-(1000129, 'meow', '$2y$10$SV3UBM.X8qk3CgYFCbHc5eTKHQz56RXWwIjUGwi.lqs.ivyAYD6CS', '2025-04-24 18:50:55', 1),
-(1000130, 'admin1', '$2y$10$OhiwItTHoM2wOkXNq/5Aa.dOlU2HfbsD4Lrfv1GVsEd.KI9fVHFAC', '2025-04-24 18:51:27', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -109,7 +100,7 @@ ALTER TABLE `user_role`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_ID` int(7) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000131;
+  MODIFY `user_ID` int(7) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000141;
 
 --
 -- AUTO_INCREMENT for table `user_role`

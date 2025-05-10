@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +32,7 @@
 
             <button type="submit" class="btn btn-success">Add Symptom</button>
             <button type="reset" class="btn btn-secondary">Reset</button>
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Back</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='addForm.php'">Back</button>
         </form>
     </div>
 </body>
@@ -71,5 +75,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
+require_once '../loginStatus.php';
 
 ?>

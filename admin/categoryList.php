@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,4 +144,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
         </script>";
     }
 }
+require_once '../loginStatus.php';
 ?>

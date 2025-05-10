@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 03, 2025 at 05:11 PM
+-- Generation Time: May 04, 2025 at 11:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -35,8 +35,38 @@ INSERT INTO disease(Disease_Name, Description, Classification, Category_ID, Note
 VALUES (dName, description, classification, categoryID, note);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDiseaseSymptom` (IN `disId` INT, IN `symid` INT)   INSERT INTO diseases_symptom(Disease_ID, Symptom_ID)
-VALUES (disId, symid)$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDiseaseSymptom` (IN `diseaseID` INT, IN `SymptomId` INT)   BEGIN
+
+INSERT INTO diseases_symptom(diseases_symptom.Disease_ID, diseases_symptom.Symptom_ID)
+VALUES (diseaseID, SymptomId);
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddSymptom` (IN `Name` VARCHAR(50), IN `Description` TEXT, IN `Severity` VARCHAR(30), IN `note` TEXT)   BEGIN
+INSERT INTO symptom (Symptom_Name, Description, Severity, Note)
+VALUES(Name, Description, Severity, note);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckCategoryOfId` (IN `id` INT)   BEGIN
+
+SELECT category.Category_ID from category WHERE category.Category_ID = id LIMIT 1;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
+from list_disease_symptom as s 
+WHERE s.Disease_ID = id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createData` (IN `dName` VARCHAR(60), IN `description` TEXT, IN `classification` VARCHAR(35), IN `categoryID` INT, IN `note` TEXT)   BEGIN
+    INSERT INTO disease (Disease_Name, Description, Classification, Category_ID, Note)
+    VALUES (dName, description, classification, categoryID, note);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteCategory` (IN `id` INT)   BEGIN
+
+DELETE FROM category WHERE Category_ID = id;
+
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
 DELETE FROM disease WHERE disease.Disease_ID = ID;
@@ -94,20 +124,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTreatmentsForDiseases` (IN `dise
     DEALLOCATE PREPARE stmt;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ListOfDisease` ()  SQL SECURITY INVOKER BEGIN
-SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, c.Category_Name from disease as d
-Left JOIN category as c 
-ON d.Category_ID = c.Category_ID;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDisease` (IN `ID` INT, IN `DName` VARCHAR(60), IN `descriptionDat` TEXT, IN `class` VARCHAR(40), IN `CId` INT, IN `note` TEXT)   BEGIN
-UPDATE disease SET Disease_Name = DName, Description = descriptionDat, Classification = class, Category_ID = CId, Note = note 
-WHERE Disease_ID = ID;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `modifyDiseasebyID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDisByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT * FROM disease WHERE Disease_ID = id$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByID` (IN `id` INT)  DETERMINISTIC SQL SECURITY INVOKER SELECT d.Disease_ID, d.Disease_Name, d.Description, d.Classification, cat.Category_Name as Category, d.Note, d.Date_Modified
+FROM disease as d
+LEFT JOIN category as cat on cat.Category_ID = d.Category_ID
+WHERE d.Disease_ID = id
+LIMIT 1$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByLetter` (IN `searchLetter` VARCHAR(5))   BEGIN
     SELECT Disease_Name, description 
@@ -121,23 +142,28 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByName` (IN `searchLet
     WHERE Disease_Name LIKE CONCAT('%', searchLetter, '%');
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllData` ()  DETERMINISTIC BEGIN
-SELECT * FROM `showalllist`;
-END$$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM `symptom`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_of_diseases` ()  SQL SECURITY INVOKER SELECT * from list_of_diseases$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `testMainDbConnection` ()  DETERMINISTIC SELECT Disease_ID from disease LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDisease` ()   Begin 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateCategoryByID` (IN `id` INT, IN `newName` VARCHAR(40), IN `newDes` TEXT)   BEGIN
 
-SELECT * FROM disease;
+UPDATE category SET category.Category_Name = newName, category.Description = newDes 
+WHERE category.Category_ID = id;
 
-End$$
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateDiseaseByID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
+UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id;
+END$$
 
 DELIMITER ;
 
@@ -224,7 +250,12 @@ INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classificat
 (12, 'Rheumatoid Arthritis', 'An autoimmune disease where the immune system attacks the joints, leading to inflammation and deformity.', '', 8, '2025-05-03 22:54:01', NULL),
 (13, 'Multiple Sclerosis', 'An autoimmune disease affecting the central nervous system, leading to muscle weakness and vision problems.', '', 8, '2025-05-03 22:54:01', NULL),
 (14, 'Asthma', 'A chronic respiratory condition where the airways become inflamed and narrowed, leading to breathing difficulties.', '', 11, '2025-05-03 22:54:01', NULL),
-(15, 'Psoriasis', 'A skin disorder that causes red, flaky patches, often on the elbows, knees, and scalp.', '', 14, '2025-05-03 22:54:01', NULL);
+(15, 'Psoriasis', 'A skin disorder that causes red, flaky patches, often on the elbows, knees, and scalp.', '', 14, '2025-05-03 22:54:01', NULL),
+(88, 'asdasdadasdada', 'afasfsd', 'aaaaaaaaaaaaaa', 1, '2025-05-04 00:28:22', ''),
+(90, 'adasdasd', 'asdasda', 'asdasd', 1, '2025-05-04 00:35:54', ''),
+(92, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:11', 'Test Note'),
+(93, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:13', 'Test Note'),
+(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note');
 
 -- --------------------------------------------------------
 
@@ -282,7 +313,11 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (37, 13, 7),
 (39, 14, 8),
 (40, 14, 1),
-(41, 15, 15);
+(41, 15, 15),
+(55, NULL, 1),
+(56, NULL, 2),
+(57, NULL, 3),
+(58, NULL, 4);
 
 -- --------------------------------------------------------
 
@@ -357,6 +392,39 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `list_disease_symptom`
+-- (See below for the actual view)
+--
+CREATE TABLE `list_disease_symptom` (
+`Disease_ID` int(11)
+,`Disease_Name` varchar(60)
+,`Disease_Description` text
+,`Classification` varchar(40)
+,`Category` varchar(40)
+,`Note` text
+,`Symptom_Name` varchar(50)
+,`Symptom_Description` text
+,`Severity` varchar(30)
+,`Date_Modified` datetime
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `list_of_diseases`
+-- (See below for the actual view)
+--
+CREATE TABLE `list_of_diseases` (
+`Disease_ID` int(11)
+,`Disease_Name` varchar(60)
+,`Description` text
+,`Classification` varchar(40)
+,`Category_Name` varchar(40)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `showalllist`
 -- (See below for the actual view)
 --
@@ -405,7 +473,8 @@ INSERT INTO `symptom` (`Symptom_ID`, `Symptom_Name`, `Description`, `Severity`, 
 (12, 'Diarrhea', 'Loose, watery stools occurring more frequently than usual.', 'Moderate', 'Monitor for fluid loss.', '2025-01-21'),
 (13, 'Abdominal Pain', 'Discomfort in the area between the chest and pelvis.', 'Moderate', 'Etiology can be GI, GU, or other.', '2025-01-22'),
 (14, 'Joint Pain', 'Discomfort arising from any joint of the body.', 'Mild', 'Arthritis or overuse.', '2025-01-23'),
-(15, 'Rash', 'An area of irritated or swollen skin, often itchy or painful.', 'Mild', 'Can be macular, papular, or mixed.', '2025-01-24');
+(15, 'Rash', 'An area of irritated or swollen skin, often itchy or painful.', 'Mild', 'Can be macular, papular, or mixed.', '2025-01-24'),
+(16, 'ttttttttttttt', 'ttttttttttttt', 'ttttttttttttt', '', '2025-05-04');
 
 -- --------------------------------------------------------
 
@@ -441,6 +510,24 @@ INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes
 (13, 'Hydration Therapy', 'Fluids given to patients who are dehydrated due to illnesses like malaria or severe diarrhea', 'Hydration is critical for recovery from fluid loss', '2025-05-03'),
 (14, 'Rest and Fluids', 'Basic treatment for viral infections like the common cold, emphasizing rest and hydration', 'May take several days to recover', '2025-05-03'),
 (15, 'Sun Protection', 'Used to treat psoriasis and other skin conditions by preventing skin flare-ups caused by UV exposure', 'Requires regular application of sunscreen', '2025-05-03');
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `list_disease_symptom`
+--
+DROP TABLE IF EXISTS `list_disease_symptom`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_disease_symptom`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Disease_Description`, `d`.`Classification` AS `Classification`, `cat`.`Category_Name` AS `Category`, `d`.`Note` AS `Note`, `s`.`Symptom_Name` AS `Symptom_Name`, `s`.`Description` AS `Symptom_Description`, `s`.`Severity` AS `Severity`, `d`.`Date_Modified` AS `Date_Modified` FROM (((`disease` `d` left join `category` `cat` on(`cat`.`Category_ID` = `d`.`Category_ID`)) left join `diseases_symptom` `ds` on(`ds`.`Disease_ID` = `d`.`Disease_ID`)) left join `symptom` `s` on(`s`.`Symptom_ID` = `ds`.`Symptom_ID`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `list_of_diseases`
+--
+DROP TABLE IF EXISTS `list_of_diseases`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `list_of_diseases`  AS SELECT `d`.`Disease_ID` AS `Disease_ID`, `d`.`Disease_Name` AS `Disease_Name`, `d`.`Description` AS `Description`, `d`.`Classification` AS `Classification`, `c`.`Category_Name` AS `Category_Name` FROM (`disease` `d` left join `category` `c` on(`d`.`Category_ID` = `c`.`Category_ID`)) ;
 
 -- --------------------------------------------------------
 
@@ -524,13 +611,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `diseases_treatment`
@@ -542,7 +629,7 @@ ALTER TABLE `diseases_treatment`
 -- AUTO_INCREMENT for table `symptom`
 --
 ALTER TABLE `symptom`
-  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `treatment`

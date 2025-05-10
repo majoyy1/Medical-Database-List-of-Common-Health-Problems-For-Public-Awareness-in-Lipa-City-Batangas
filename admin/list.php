@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +28,7 @@
     <!-- Bootstrap Nav-Pills -->
     <ul class="nav nav-pills justify-content-center bg-light py-3">
         <li class="nav-item">
-            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'category.php' ? 'active' : '' ?>" href="category.php">Category</a>
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'category.php' ? 'active' : '' ?>" href="categoryList.php">Category</a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>" href="list.php">Diseases</a>
@@ -229,5 +233,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
         </script>";
     }
 }
+require_once '../loginStatus.php';
 ?>
 

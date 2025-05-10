@@ -63,7 +63,7 @@ session_start();
         </form>
 
         <!-- Edit Form -->
-        <form class="editForm" action="requests.php?request=edit" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Category?');">
+        <form class="editForm" action="requests.php?request=editCategory" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Category?');">
             <label for="editID">ID:</label>
             <input type="input" id="editdata" name="editID" required>
 

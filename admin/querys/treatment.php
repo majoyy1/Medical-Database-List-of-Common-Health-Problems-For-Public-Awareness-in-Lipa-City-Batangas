@@ -23,10 +23,10 @@ class CrudTreatment extends dbconnection {
         return htmlspecialchars(trim($dataCleaned));
     }
 
-    function createTreatment($TreatmentName, $description) {
+    function createTreatment($TreatmentName, $description, $note) {
         try {
-            $stmt = $this->conn->prepare("Call AddTreatment(:TreatmentName, :description);");
-            $stmt->execute([':TreatmentName' => $TreatmentName, ':description' => $description]);
+            $stmt = $this->conn->prepare("Call AddTreatment(:TreatmentName, :description, :note);");
+            $stmt->execute([':TreatmentName' => $TreatmentName, ':description' => $description , ':note' => $note]);
             return 1;
             
         } catch (PDOException $e) {
@@ -35,11 +35,11 @@ class CrudTreatment extends dbconnection {
         }
     }
 
-    function updateTreatment($TreatmentID, $TreatmentName, $description) {
+    function updateTreatment( $TreatmentName, $description, $note, $TreatmentID) {
         try {
             
-            $stmt = $this->conn->prepare("Call UpdateTreatmentByID(:TreatmentID, :TreatmentName, :description);");
-            $stmt->execute([':TreatmentID' => $TreatmentID, ':TreatmentName' => $TreatmentName, ':description' => $description]);
+            $stmt = $this->conn->prepare("Call UpdateTreatment(:TreatmentID, :TreatmentName, :description, :note);");
+            $stmt->execute([':TreatmentID' => $TreatmentID, ':TreatmentName' => $TreatmentName, ':description' => $description, ':note' => $note]);
             return 1;
             
         } catch (PDOException $e) {

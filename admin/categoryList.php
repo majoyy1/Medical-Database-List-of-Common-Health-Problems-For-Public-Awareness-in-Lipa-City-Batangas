@@ -33,7 +33,7 @@ session_start();
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>" href="list.php">Diseases</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'symptoms.php' ? 'active' : '' ?>" href="symptoms.php">Symptoms</a>
+           <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'symptomLists.php' ? 'active' : '' ?>" href="symptomLists.php">Symptoms</a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'TreatmentList.php' ? 'active' : '' ?>" href="treatmentList.php">Treatment</a>

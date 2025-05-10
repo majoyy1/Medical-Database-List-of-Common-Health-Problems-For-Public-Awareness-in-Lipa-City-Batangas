@@ -5,11 +5,11 @@ session_start();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--DataTables CSS-->
+    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
-    <!--jQuery -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!--DataTables JS-->
+    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <!-- Bootstrap CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +21,7 @@ session_start();
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treatment Data</title>
+    <title>Symptoms Data</title>
 </head>
 <body>
     <!-- Bootstrap Nav-Pills -->
@@ -44,65 +44,57 @@ session_start();
     </ul>
 
     <div style="text-align: center;">
-        <h3 class="title">Treatment Lists</h3>
+        <h3 class="title">Symptom Lists</h3>
     </div>
-    <table id="TreatmentTable" class="display-table">
+    <table id="SymptomTable" class="display-table">
         <thead>
-            <th></th>
+            <tr>
+            </tr>
         </thead>
     </table>
-    <!-- //addForm -->
+    <!-- Add Form -->
     <div class="formContainer">
-        <form class="addForm" action="requests.php?request=add" method="POST" onsubmit="return confirm('Are you sure to continue ADD Treatment?');">
-            <label for="categname">Treatment:</label>
-            <input type="text" id="categname" name="TreatmentName" required><br><br>
-            
-            <label for="des">Description</label>
-            <input type="text" id="des" name="Description" required><br><br>
-            <button type="submit">Add Treatment</button>
+        <form class="addForm" action="addSymptom.php" method="POST">
+            <label for="symptomName">Symptom:</label>
+            <button type="submit">Add Symptom</button>
         </form>
 
         <!-- Edit Form -->
-        <form class="editForm" action="requests.php?request=edit" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Treatment?');">
+        <form class="editForm" action="editSymptom.php" method="GET" onsubmit="return confirm('Are you sure to continue EDIT Symptom?');">
             <label for="editID">ID:</label>
-            <input type="input" id="editdata" name="editID" required>
-
-            <label for="editname">Treatment:</label>
-            <input type="input" id="editname" name="TreatmentName" required><br><br>
-
-            <label for="description">Description</label>
-            <input type="input" id="description" name="Description" required><br><br>
+            <input type="text" id="editdata" name="editID" required>
 
             <button type="submit">Edit</button>
         </form>
 
         <!-- Delete Form -->
-        <form class="deleteForm" action="requests.php" method="GET" onsubmit="return confirm('Delete this Treatment?');">
-            <label for="DeleteCatID">ID:</label>
-            <input type="text" id="DeleteCatID" name="DeleteCatID">
-            <button type="submit" id="DeleteCatID">DELETE</button>
+        <form class="deleteForm" action="requests.php" method="GET" onsubmit="return confirm('Delete this Symptom?');">
+            <label for="DeleteSymptomID">ID:</label>
+            <input type="text" id="DeleteSymptomID" name="DeleteSymptomID">
+            <button type="submit">DELETE</button>
         </form><br>
     </div>
 
     <script>
     $(document).ready(function() {
-        const table = $('#TreatmentTable').DataTable({
+        const table = $('#SymptomTable').DataTable({
             order: [[0, 'asc']],
             ajax: {
-                url: 'requests.php',
+                url: 'callData.php',
                 method: 'GET',
-                data: {request: 'Treatment'},
-                dataSrc: 'dataTreatment'
+                data: { request: 'symptom' },
+                dataSrc: 'dataSymptom'
             },
             columns: [
-                { data: 'Treatment_ID', title: 'ID' },
-                { data: 'Treatment_Name', title: 'Name' },
+                { data: 'Symptom_ID', title: 'ID' },
+                { data: 'Symptom_Name', title: 'Name' },
                 { data: 'Description', title: 'Description' },
-                { data: 'Notes', title: 'Notes' }
+                { data: 'Severity', title: 'Severity' },
+                { data: 'Note', title: 'Note' },
+                { data: 'DateCreated', title: 'Date Added' }
+
             ]
         });
-
-       
     });
     </script>
 </body>
@@ -118,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'TreatmentList.php';
+                window.location.href = 'symptomLists.php';
             });
         </script>";
     } elseif (isset($_GET['error'])) {
@@ -129,18 +121,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['success'])) {
                 icon: 'error',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'TreatmentList.php';
+                window.location.href = 'symptomLists.php';
             });
         </script>";
-    } elseif($_GET['success'] == 2) {
+    } elseif ($_GET['success'] == 2) {
         echo "<script>
             Swal.fire({
                 title: 'Success!',
-                text: 'Treatment Modified Successfully!',
+                text: 'Symptom Modified Successfully!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'TreatmentList.php';
+                window.location.href = 'symptomLists.php';
             });
         </script>";
     }

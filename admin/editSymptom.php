@@ -1,5 +1,47 @@
 <?php
 session_start();
+
+require_once "querys/symptoms.php";
+
+$symptoms = new CrudSymptoms();
+
+
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+
+        if (isset($_GET['editID'])) {
+            $temp = $symptoms->checkDataById($_GET['editID']);
+            if (empty($temp)) {
+                throw new Exception("No data found for the given ID.");
+            }
+            $Data = $temp[0];
+        } elseif ($_GET['editID'] == NULL){
+
+            throw new Exception("No ID Input.");
+
+        } else {
+            throw new Exception("Invalid request.");
+        }
+    } 
+    
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['Disease_ID'])) {
+            if ($distemp->modifyData($_POST['Disease_ID'], $_POST['DiName'], $_POST['Description'], $_POST['Classification'], $_POST['Category'], $_POST['Note'])) {
+                header("Location: list.php?success=2");
+                exit;
+            } else {
+                throw new Exception("Failed to update data.");
+            }
+        }
+    }
+} catch (Exception $err) {
+    $msg = "Error Request! " . $err->getMessage() . " Try Again.";
+    echo "<script>
+    alert('$msg');
+    window.location.href = 'list.php';
+    </script>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,8 +86,7 @@ require_once 'querys/symptoms.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['symptomName'])) {
-        $symptoms = new CrudSymptoms();
-
+        
         $symptomName = $symptoms->cleanData($_POST['symptomName']);
         $description = $symptoms->cleanData($_POST['description']);
         $severity = $symptoms->cleanData($_POST['severity']);

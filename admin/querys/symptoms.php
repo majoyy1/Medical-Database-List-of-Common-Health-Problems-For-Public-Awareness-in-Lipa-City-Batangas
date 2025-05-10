@@ -21,7 +21,18 @@ class CrudSymptoms extends dbconnection {
 
     function checkSymptomOfId($id) {
         try {
-            $stmt = $this->conn->prepare("Call CheckSymptomOfId(:id);");
+            $stmt = $this->conn->prepare("Call CheckSymptomOfIdByDisease(:id);");
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            die("Error fetching data: " . $e->getMessage());
+        }
+    }
+
+    function checkDataByID ($id){
+        try {
+            $stmt = $this->conn->prepare("Call CheckSymptomById(:id);");
             $stmt->execute([':id' => $id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             

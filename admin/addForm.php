@@ -26,14 +26,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($disease->createData($dName, $dDescription, $dClasssif, $dCat, $dNote, $symp)) {
             $message = "The data has been added successfully!";
+            header('list.php?success=1');
 
-            echo "<script>
-            alert('$message');
-            window.location.href = 'list.php?success=1';
-            </script>";
+            // echo "<script>
+            // alert('$message');
+            // window.location.href = 'list.php?success=1';
+            // </script>";
         } else {
             $message = "Error Adding Data";
-
+            
             echo "<script>
             alert('$message');
             window.location.href = 'addForm.php';

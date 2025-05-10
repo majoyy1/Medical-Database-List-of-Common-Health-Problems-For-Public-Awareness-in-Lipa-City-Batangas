@@ -1,6 +1,6 @@
 <?php
 require_once 'login/encryption.php';
-echo $_SESSION['loginstatus'];
+// echo $_SESSION['loginstatus'];
 
 
 if ($_SESSION['loginstatus'] == 0 || $_SESSION['loginstatus'] == null) {

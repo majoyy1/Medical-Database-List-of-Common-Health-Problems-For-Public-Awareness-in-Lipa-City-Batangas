@@ -6,13 +6,9 @@ $security = new encryptionWork();
 
 // Handle logout first
 if (isset($_GET['logout']) && $_GET['logout'] == 1) {
-    // Clear all session variables
+        
     $_SESSION = array();
-    
-    // Destroy the session
     session_destroy();
-    
-    // Redirect to login page
     header("Location: index1.php");
     exit;
 }

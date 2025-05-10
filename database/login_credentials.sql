@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2025 at 09:45 PM
+-- Generation Time: May 10, 2025 at 05:20 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -51,7 +51,7 @@ CREATE TABLE `user` (
   `username` varchar(50) NOT NULL,
   `encryption` varchar(120) NOT NULL,
   `DateCreated` datetime NOT NULL DEFAULT current_timestamp(),
-  `UserRole` int(5) DEFAULT 1
+  `UserRole` int(11) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -59,25 +59,29 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_ID`, `username`, `encryption`, `DateCreated`, `UserRole`) VALUES
-(1000001, 'john_doe', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '2023-10-15 09:30:45', 1),
-(1000002, 'jane_smith', '$2y$10$Lkjsdflkjsdfkjhsdf.kjhsfdkjhsdfkjhsdfkjhsfdkjhsfdkjhs', '2023-10-16 14:20:10', 2),
-(1000003, 'admin_user', '$2y$10$KJHSDFKJHSDfkjsdhfkjsdhfkjshdfkjhsdfkjhsdfkjhsdfkjhsdf', '2023-10-17 08:45:22', 5),
-(1000004, 'alice_green', '$2y$10$SDLFJSDLKFJsdflkjsdflkjsdflkjsdflkjsdflkjsdflkjsdflkj', '2023-10-18 11:15:33', 1),
-(1000005, 'bob_builder', '$2y$10$DFLKJSDLFKJsdflkjsdflkjsdflkjsdflkjsdflkjsdflkjsdflkj', '2023-10-19 16:40:05', 2),
-(1000006, 'emma_watson', '$2y$10$KJSDHFLKSDJfkjshdfkjshdfkjshdfkjshdfkjshdfkjshdfkjshd', '2023-10-20 10:25:18', 1),
-(1000007, 'mike_tyson', '$2y$10$LKJSDFLKJSFkjshdfkjshdfkjshdfkjshdfkjshdfkjshdfkjshdf', '2023-10-21 13:50:30', 3),
-(1000008, 'sarah_connor', '$2y$10$SDKJFLSKDJFkjshdfkjshdfkjshdfkjshdfkjshdfkjshdfkjshdf', '2023-10-22 17:35:42', 2),
-(1000009, 'dave_grohl', '$2y$10$KJSDHFLKSDJfkjshdfkjshdfkjshdfkjshdfkjshdfkjshdfkjshd', '2023-10-23 20:15:55', 1),
-(1000010, 'lisa_ray', '$2y$10$LKJSDFLKJSFkjshdfkjshdfkjshdfkjshdfkjshdfkjshdfkjshdf', '2023-10-24 22:45:10', 2),
-(1000055, 'admin123', '$2y$10$tFZeqOgNrs.FXRJQqwvoxOyC/baE2W9LJpLALyhFCJNupQpZTgtf2', '2025-04-16 01:20:00', 1),
-(1000066, 'admin1231', '$2y$10$lk4HY3jbj/zaIAt.wGBp7.fWCecbo.k2IuqoVkjSQruh9lotGrs0u', '2025-04-16 01:21:40', 1),
-(1000068, 'admin12311', '$2y$10$a0oAunN4I7PnmEsGLc7qF.1oQdPf2tUyQjN26hzXQFTUVVwAVZgcO', '2025-04-16 01:22:25', 1),
-(1000070, 'admin123111', '$2y$10$Tt5P0qc56My7P/hrtns.bO/1U3DhFmGCAJoajfFSTJll8JV/wmtpi', '2025-04-16 01:22:44', 1),
-(1000123, 'admin1231111', '$2y$10$Nnc1NHp5X3xNEKqAfPsSTuiWbTjP40bW6jE6oiflyRBnYB254RWMm', '2025-04-16 01:55:02', 1),
-(1000124, 'admin12311111', '$2y$10$gyw7Ux1NtHT61yZ9fgTGFOfbpmCooFdVanoR6AXPMB9VondTfVmle', '2025-04-16 01:59:27', 1),
-(1000125, 'ppppppppppp', '$2y$10$45o1IAaqFO514yBJv3C6Xe9pvfZRStCLIameqO.AeMxUq5oQxqshe', '2025-04-16 02:09:29', 1),
-(1000126, 'ad', '$2y$10$a/9ycwDqIq1pULHRYMs2d.eKPnqU.Hvrkmj41q4MWDnOSONxMSZn.', '2025-04-16 02:10:49', 1),
-(1000127, 'ASAB--', '$2y$10$0YgpDNaUf05x3p58Cx17f.DXumsaFP4MJ7/XXNqRYulS6z/A1INf.', '2025-04-16 02:11:58', 1);
+(1000141, 'aaa', '$2y$10$KacMgToMT5ZvlsFH0Wq3aOd3OxcauvP0exuUDuB02codxf0ETRIHy', '2025-05-04 18:19:44', 1),
+(1000142, 'admin', '$2y$10$xXf4kEiDdA03wtU6JbzbWOrHDcLTwg9jFcmY3eEYzSTdjCESySF3.', '2025-05-04 18:21:39', 1),
+(1000143, 'admin1', '$2y$10$DH2MpUnK5RQUCmTKTEkAtOC0II0UhSaENcqxh6PO2xpYmUFW3nesO', '2025-05-07 15:02:05', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_role`
+--
+
+CREATE TABLE `user_role` (
+  `role_id` int(11) NOT NULL,
+  `role_name` varchar(60) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_role`
+--
+
+INSERT INTO `user_role` (`role_id`, `role_name`) VALUES
+(1, 'Guest'),
+(2, 'Administrator'),
+(3, 'ViewOnly');
 
 --
 -- Indexes for dumped tables
@@ -88,7 +92,14 @@ INSERT INTO `user` (`user_ID`, `username`, `encryption`, `DateCreated`, `UserRol
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_ID`),
-  ADD UNIQUE KEY `byUname` (`username`) USING BTREE;
+  ADD UNIQUE KEY `byUname` (`username`) USING BTREE,
+  ADD KEY `UserRole` (`UserRole`);
+
+--
+-- Indexes for table `user_role`
+--
+ALTER TABLE `user_role`
+  ADD PRIMARY KEY (`role_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -98,7 +109,23 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_ID` int(7) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000128;
+  MODIFY `user_ID` int(7) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000144;
+
+--
+-- AUTO_INCREMENT for table `user_role`
+--
+ALTER TABLE `user_role`
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`UserRole`) REFERENCES `user_role` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

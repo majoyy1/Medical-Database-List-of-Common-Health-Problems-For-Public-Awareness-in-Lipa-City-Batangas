@@ -66,7 +66,7 @@ try {
         if (isset($_GET['request']) && $_GET['request'] === 'addTreatment') {
             $name = $treatment->cleanData($_POST['TreatmentName']);
             $desc = $treatment->cleanData($_POST['Description']);
-            if ($treatment->createTreatment($name, $desc)) {
+            if ($treatment->createTreatment($name, $desc, $note)) {
                 header("Location: TreatmentList.php?success=1");
             } else {
                 throw new Exception("Error Adding Treatment.");
@@ -74,18 +74,6 @@ try {
             exit;
         }
 
-        // Handle Edit Treatment
-        if (isset($_GET['request']) && $_GET['request'] === 'editTreatment') {
-            $id = $treatment->cleanData($_POST['editID']);
-            $name = $treatment->cleanData($_POST['TreatmentName']);
-            $desc = $treatment->cleanData($_POST['Description']);
-            if ($treatment->updateTreatment($id, $name, $desc)) {
-                header("Location: TreatmentList.php?success=2");
-            } else {
-                throw new Exception("Error Editing Treatment.");
-            }
-            exit;
-        }
 
         // Handle Add Category
         if (isset($_GET['request']) && $_GET['request'] === 'addCategory') {

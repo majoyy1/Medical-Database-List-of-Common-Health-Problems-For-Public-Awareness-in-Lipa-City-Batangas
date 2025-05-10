@@ -5,7 +5,63 @@ require_once "querys/treatment.php";
 
 $distemp = new CrudDisease();
 $categ = new CrudCategory();
-$treats = new CrudTreatment();
+
+$treatment = new CrudTreatment();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['request']) && $_GET['request'] === 'Treatment') {
+    $result = $treatment->read();
+    echo json_encode(['dataTreatment' => $result]);
+    exit;
+}
+
+try {
+    // Fetch treatments for DataTable
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['request']) && $_GET['request'] === 'Treatment') {
+        $result = $treatment->read();
+        echo json_encode(['dataTreatment' => $result]);
+        exit;
+    }
+
+    // Handle Add Treatment
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['request']) && $_GET['request'] === 'add') {
+        $name = $treatment->cleanData($_POST['TreatmentName']);
+        $desc = $treatment->cleanData($_POST['Description']);
+        
+        if ($treatment->createTreatment($name, $desc)) {
+            header("Location: TreatmentList.php?success=1");
+        } else {
+            throw new Exception("Error Adding Treatment.");
+        }
+    }
+
+    // Handle Edit Treatment
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['request']) && $_GET['request'] === 'edit') {
+        $id = $treatment->cleanData($_POST['editID']);
+        $name = $treatment->cleanData($_POST['TreatmentName']);
+        $desc = $treatment->cleanData($_POST['Description']);
+
+        if ($treatment->updateTreatment($id, $name, $desc)) {
+            header("Location: TreatmentList.php?success=2");
+        } else {
+            throw new Exception("Error Editing Treatment.");
+        }
+    }
+
+    // Handle Delete Treatment
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['DeleteCatID'])) {
+        $id = $treatment->cleanData($_GET['DeleteCatID']);
+
+        if ($treatment->deleteTreatment($id)) {
+            header("Location: TreatmentList.php?success=1");
+        } else {
+            throw new Exception("Error Deleting Treatment.");
+        }
+    }
+
+} catch (Exception $e) {
+    echo "<script>alert('Error: {$e->getMessage()}'); window.location.href = 'TreatmentList.php';</script>";
+    exit;
+}
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -57,11 +113,8 @@ try {
         if (isset($_GET['request']) && $_GET['request'] === 'category') {
             $categResult = $categ->read();
             echo json_encode(['dataCategory' => $categResult], JSON_PRETTY_PRINT);
-        }elseif (isset($_GET['request']) && $_GET['request'] === 'Treatment') {
-            $treatResult = $treats->read();
-            echo json_encode(['dataTreatment' => $treatResult], JSON_PRETTY_PRINT);
-        } 
-            
+        }
+
         // Handle Delete Category
         if (isset($_GET['DeleteCatID']) ) {
             $id = $categ->cleanData($_GET['DeleteCatID']);

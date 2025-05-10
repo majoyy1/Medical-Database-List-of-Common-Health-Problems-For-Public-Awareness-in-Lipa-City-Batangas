@@ -10,12 +10,12 @@ class CrudTreatment extends dbconnection {
 
     public function read() {
         try {
-            $stmt = $this->conn->prepare("CALL ShowListOfTreatment();"); // Ensure proper syntax for stored procedure call
+            $stmt = $this->conn->prepare("Call ShowListOfTreatment;"); // Use the new procedure
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
         } catch (PDOException $e) {
-            error_log("Error fetching data: " . $e->getMessage()); // Log error instead of using die
-            return [];
+            die("Error fetching data: " . $e->getMessage());
         }
     }
 
@@ -53,26 +53,25 @@ class CrudTreatment extends dbconnection {
             $stmt = $this->conn->prepare("Call DeleteTreatment(:TreatmentID);");
             $stmt->execute([':TreatmentID' => $TreatmentID]);
             return 1;
+            
         } catch (PDOException $e) {
-            error_log("Error deleting treatment: " . $e->getMessage()); // Log error instead of using die
+            die("Error Modifiying data: " . $e->getMessage());
             return 0;
         }
     }
 
     function checkTreatmentById($id) {
         try {
-            $stmt = $this->conn->prepare("Call CheckCategoryOfId(:id);");
+            $stmt = $this->conn->prepare("Call CheckTreatmentOfId(:id);");
             $stmt->execute([':id' => $id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
         } catch (PDOException $e) {
-            error_log("Error fetching treatment by ID: " . $e->getMessage()); // Log error instead of using die
-            return [];
+            die("Error fetching data: " . $e->getMessage());
         }
     }
 
 }
-$test = new CrudTreatment();
-var_dump($test->read());
-echo "hello";
+
 
 ?>

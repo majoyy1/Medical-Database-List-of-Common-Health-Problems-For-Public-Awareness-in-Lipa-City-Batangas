@@ -29,6 +29,7 @@ $symptomsList = $symptomChecker->getSymptoms();
 <head>
     <title>Symptom Checker</title>
     <link rel="stylesheet" href="../STYLES/Styles.css">
+    <link rel="icon" href="../logo.png" type="image/png">
 </head>
 <body>
     <h2>Select Symptoms</h2>

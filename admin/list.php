@@ -6,6 +6,7 @@ session_start();
 <html lang="en">
 <head>
     <!--DataTables CSS-->
+    <link rel="icon" href="../logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
     <!--jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -34,10 +35,10 @@ session_start();
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>" href="list.php">Diseases</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'symptoms.php' ? 'active' : '' ?>" href="symptoms.php">Symptoms</a>
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'symptomLists.php' ? 'active' : '' ?>" href="symptomLists.php">Symptoms</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'treatment.php' ? 'active' : '' ?>" href="treatment.php">Treatment</a>
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'treatmentList.php' ? 'active' : '' ?>" href="treatmentList.php">Treatment</a>
         </li>
         <li class="nav-item">
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'index1.php' ? 'active' : '' ?>" href="../login/index1.php?logout=1">Logout</a>
@@ -64,7 +65,7 @@ session_start();
         <!-- Edit Form -->
         <form class="editForm" action="edit.php" method="GET" onsubmit="return confirm('Are you sure to continue EDIT Data?');">
             <label for="editID">ID:</label>
-            <input type="text" id="editdata" name="editID">
+            <input type="text" id="editdata" name="editID" placeholder="ID">
             <input type="text" id="idver" name="auth" value="1" hidden>
             <button type="submit">Edit</button>
         </form>
@@ -72,7 +73,7 @@ session_start();
         <!-- Delete Form -->
         <form class="deleteForm" action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
             <label for="DeleteID">ID:</label>
-            <input type="text" id="DiName" name="DeleteID">
+            <input type="text" id="DiName" name="DeleteID" placeholder="ID">
             <button type="submit" id="diName">DELETE</button>
         </form><br>
 
@@ -94,6 +95,7 @@ session_start();
                     <!-- <p><strong>Severity:</strong> <span id="modalSeverity"></span></p> -->
                     <p><strong>Symptoms:</strong> <span id="modalSymptom"></span></p>
                     <p><strong>Comment:</strong> <span id="modalAdditionalInfo"></span></p>
+                    <p><strong>Treatment:</strong> <span id="modalTreatment"></span></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -116,7 +118,7 @@ session_start();
             ajax: {
                 url: 'callData.php',
                 method: 'POST',
-                data: {request: '1'},
+                data: { request: '1' },
                 dataSrc: 'dataDisease'
             },
             columns: [
@@ -130,19 +132,21 @@ session_start();
 
         // Add click event to rows
         $('#DiseaseTable tbody').on('click', 'tr', function() {
-            const data = table.row(this).data(); 
+            const data = table.row(this).data();
             if (data) {
                 $.ajax({
-                    url: 'callData.php', 
+                    url: 'callData.php',
                     method: 'POST', // Use POST to send the ID
-                    data: { 
+                    data: {
                         request: '2',
-                        id: data.Disease_ID },
+                        id: data.Disease_ID
+                    },
                     success: function(response) {
                         console.log(response);
                         const itemData = response['dataDisease'];
                         const symptomsData = response['symptomsData'];
-                        
+                        const treatmentsData = response['dataTreatment'];
+
                         if (response.error) {
                             Swal.fire({
                                 title: 'Error!',
@@ -157,16 +161,23 @@ session_start();
                             $('#modalDescription').text(data.Description || 'N/A');
                             $('#modalClassification').text(data.Classification || 'N/A');
                             $('#modalCategory').text(data.Category || 'N/A');
-                            // $('#modalSeverity').text(data.Severity || 'N/A');
                             $('#modalAdditionalInfo').text(data.Note || 'N/A');
 
+                            // Display symptoms
                             if (symptomsData.length > 0) {
-                                // Remove duplicates and map symptoms to a readable format
                                 const uniqueSymptoms = [...new Map(symptomsData.map(symptom => [symptom.Symptom_Name, symptom])).values()];
-                                const symptoms = uniqueSymptoms.map(symptom => symptom.Symptom_Name).join(', ');
+                                const symptoms = uniqueSymptoms.map(symptom => symptom.Symptom_Name).filter(name => name).join(', ');
                                 $('#modalSymptom').text(symptoms || 'N/A');
                             } else {
                                 $('#modalSymptom').text('N/A');
+                            }
+
+                            // Display treatments
+                            if (treatmentsData.length > 0) {
+                                const treatments = treatmentsData.map(treatment => treatment.Treatment_Name).join(', ');
+                                $('#modalTreatment').text(treatments || 'N/A');
+                            } else {
+                                $('#modalTreatment').text('N/A');
                             }
 
                             // Show the Info

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Documentation</title>
+</head>
+<body>
+    <h2>Php Documentation</h2>
+    <p>Project Structure</p>
+    <p>Last Update - 4/17/2025</p>
+    <ul>
+        <li>admin
+            <ul>
+                <li>/addForm.php</li>
+                <li>/callData.php</li>
+                <li>/list.php</li>
+                <li>/querys.php</li>
+                <li>/requests.php</li>
+                <li>/sendDiseaseForm.php</li>
+            </ul>
+        </li>
+        <li>Database
+            <ul>
+                <li>backup</li>
+                <li>/local_disease_registry_lipa_city.sql</li>
+                <li>/login_credentials.sql</li>
+            </ul>
+        </li>
+        <li>login
+            <ul>
+                <li>/authdb.php</li>
+                <li>/encryption.php</li>
+                <li>index1.php</li>
+                <li>loginCrud.php</li>
+            </ul>
+        </li>
+        <li>/connection.php</li>
+    </ul><br><br>
+    <dl>
+        <dt><h3>addForm.php</h3></dt>
+        <dd>- page that add the disease Data</dd>
+        <dt><h3>callData.php</h3></dt>
+        <dd>- access all disease data and Show as a json</dd>
+        <dt><h3>list.php</h3></dt>
+        <dd>- get the data from "callData.php" then post it using datatables</dd>
+        <dd>- have a delete form that gets the disease Id and send using POST to "requests.php"</dd>
+        <dt><h3>querys.php</h3></dt>
+        <dd>- have all crud of every table</dd>
+        <dd><h4>CrudDisease</h4></dd>
+        <dd>read() - call ListofDisease;</dd>
+        <dd>createData(DisName, description, classification, categoryID, note) - add data</dd>
+        <dd>deleteDiseaseData(dataId) - Call DeleteDisease</dd>
+        <dd>cleanData(data) - convert special charcter for database</dd>
+        <dd><h3>CrudCategory</h3></dd>
+        <dd>read() - Call ShowListOfCategory;</dd>
+    </dl>
+    
+
+
+</body>
+</html>

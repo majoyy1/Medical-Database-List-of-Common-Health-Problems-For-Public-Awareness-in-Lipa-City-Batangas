@@ -3,8 +3,10 @@
 class dbLoginConn {
     private $host = "localhost";
     private $dbName = "login_credentials";
-    private $username = "loginAdmin";
-    private $password = "Admin";
+    // private $username = "loginAdmin";
+    // private $password = "Admin";
+    private $username = "root";
+    private $password = "";
     protected $conn;
 
     function __construct() {
@@ -12,19 +14,21 @@ class dbLoginConn {
 
         $this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbName", $this->username, $this->password);
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $test = $this->conn->query("Call testLoginDbConnection;");
-
-        if ($test && $test->fetchColumn()) {
-            echo "Connection Success";
+        //If the database connection is failed, check if the the db has an item 
+        //it must have at least one item to work
+        $test = $this->conn->prepare("Call testLoginDbConnection;");
+        $test->execute();
+        if ($test->fetchColumn()) {
             return $this->conn;  
+        } else {
+            // echo "Connection Failed";
+            throw new Exception("Connection Failed");
         }
 
-        throw new Exception("Database Error");
+        
 
       } catch(Exception $e) {
-        error_log("Connection failed: " . $e->getMessage());
-        die("Connection Failed: No Database Connected");
+            die("Connection Failed: " . $e->getMessage());
       }
     }
 
@@ -66,16 +70,11 @@ class userCredentialCRUD extends dbLoginConn {
         }
     }
 
-    function SearchUserByUsername($uname) {
+    public function SearchUserByUsername($uname) {
         try {
             $stmt = $this->conn->prepare("Call SearchByUserName(:name);");
             $stmt->execute([':name' => $uname]);
             $temp = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if ($temp == null){
-                // echo 'Null';
-                // throw new Exception("No Matched Value");
-                return $temp;
-            }
             return $temp;
             
         } catch (PDOException $e) {

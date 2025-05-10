@@ -4,13 +4,11 @@ require_once 'authdb.php';
 class encryptionWork {
     private $loginCrud;
 
-    function __construct()
-    {
+    function __construct(){
         $this->loginCrud = new userCredentialCRUD();
     }
     
     private function encryptPassword($InputPassword){
-        //Check if Whitespace and Convert Into Hashed
         try {
             if (!is_string($InputPassword) || trim($InputPassword) === '') {
                 throw new Exception("Password cannot be empty or whitespace.L16<br>");
@@ -18,7 +16,7 @@ class encryptionWork {
                 $temp = password_hash($InputPassword, PASSWORD_DEFAULT);
 
                 if (password_verify($InputPassword, $temp)){
-                    echo "Password is Correctly Encrypted" .": encryption.php L23 <br>";
+                    // echo "Password is Correctly Encrypted" .": encryption.php L23 <br>";
                     return $temp;
                 } else {
                     throw new Exception("Password Encryption Error");
@@ -44,51 +42,55 @@ class encryptionWork {
             };
 
             // var_dump($result);
-            // echo $result[0]["username"];
-            // echo $result[0]["encryption"];
+            echo $result[0]["username"];
+            echo $result[0]["encryption"];
 
             $dbhashedpass = trim($result[0]["encryption"]);
             if (password_verify($InputPassword, $dbhashedpass)){
-                echo "Password is Correct; <br>";
+                // echo "Password is Correct; <br>";
+                return true;
             } else {
                 throw new Exception("Password Verification Error");
             }
 
         } catch (Exception $err) {
             echo "Error: " .$err->getMessage();
+            return false;
         }
     }
 
-    function AddUsertoDatabase($uname, $passwordInput){
+    function AddUsertoDatabase($uname, $passwordInput) {
         try {
-            if (!is_string($uname) || trim($uname) === '' || !is_string($passwordInput) || trim($passwordInput)  === '') {
-                throw new Exception("UserName or Password is Empty!!L62");
-            } 
-
-            $result = $this->loginCrud->SearchUserByUsername($uname);
-
-            if ($result == null){
-                echo "Null <br>";
-
-                $lockedpass = $this->encryptPassword($passwordInput);
-
-                if ($this->loginCrud->AddUser($uname, $lockedpass)) {
-                    echo "Password Stored In database->encrption.php L65<br>";
-                    $this->verifyInputCredentials($uname, $passwordInput);
-                } else {
-                    throw new Exception("not store and not verified!!");
-                }
-
-            } else {
-                throw new Exception("Already Have Username! Try Again.");
+            // Validate input parameters
+            if (!is_string($uname) || trim($uname) === '' || 
+                !is_string($passwordInput) || trim($passwordInput) === '') {
+                throw new Exception("Username or Password cannot be empty");
             }
-
-
-        } catch (Exception $errrr) {
-            echo 'Creating New Account Error: ' .$errrr->getMessage();
+    
+            // Check if username already exists
+            $existingUser = $this->loginCrud->SearchUserByUsername($uname);
+            if ($existingUser) {
+                throw new Exception("Username already exists. Please choose a different username.");
+            }
+                
+            // Encrypt password and add user
+            $lockedpass = $this->encryptPassword($passwordInput);
             
+            if (!$this->loginCrud->AddUser($uname, $lockedpass)) {
+                throw new Exception("Failed to store user in database");
+            }
+    
+            // Verify the newly created credentials
+            if (!$this->verifyInputCredentials($uname, $passwordInput)) {
+                throw new Exception("Account created but verification failed");
+            }
+    
+            return true;
+    
+        } catch (Exception $e) {
+            error_log("AddUsertoDatabase Error: " . $e->getMessage());
+            return $e->getMessage();
         }
-
     }
 
 }

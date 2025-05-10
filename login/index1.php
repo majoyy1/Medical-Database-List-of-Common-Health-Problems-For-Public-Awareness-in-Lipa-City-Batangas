@@ -6,13 +6,9 @@ $security = new encryptionWork();
 
 // Handle logout first
 if (isset($_GET['logout']) && $_GET['logout'] == 1) {
-    // Clear all session variables
+        
     $_SESSION = array();
-    
-    // Destroy the session
     session_destroy();
-    
-    // Redirect to login page
     header("Location: index1.php");
     exit;
 }
@@ -53,6 +49,7 @@ if (isset($_SESSION['registration_error'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Authenticator</title>
+    <link rel="icon" href="../logo.png" type="image/png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- SweetAlert2 -->

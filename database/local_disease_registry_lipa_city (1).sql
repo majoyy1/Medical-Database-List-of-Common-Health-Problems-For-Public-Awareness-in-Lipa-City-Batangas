@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 11:31 AM
+-- Generation Time: May 10, 2025 at 03:57 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -42,9 +42,19 @@ VALUES (diseaseID, SymptomId);
 
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddDiseaseTreatment` (`id` INT, `treatID` INT)   BEGIN
+INSERT Into diseases_treatment(`Disease_ID`, `Treatment_ID`)
+VALUES (id, treatID);
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddSymptom` (IN `Name` VARCHAR(50), IN `Description` TEXT, IN `Severity` VARCHAR(30), IN `note` TEXT)   BEGIN
 INSERT INTO symptom (Symptom_Name, Description, Severity, Note)
 VALUES(Name, Description, Severity, note);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddTreatment` (`Name` VARCHAR(50), `Description` TEXT, `Note` TEXT)   BEGIN
+INSERT INTO treatment (treatment_Name, Description, Notes)
+VALUES(Name, Description, Note);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckCategoryOfId` (IN `id` INT)   BEGIN
@@ -53,9 +63,17 @@ SELECT category.Category_ID from category WHERE category.Category_ID = id LIMIT 
 
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfId` (IN `id` INT)   SELECT s.Symptom_Name, s.Symptom_Description, s.Severity, s.Note
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomById` (IN `id` INT)   BEGIN
+SELECT * from symptom WHERE symptom.Symptom_ID = id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckSymptomOfIdByDisease` (IN `id` INT)   SELECT *
 from list_disease_symptom as s 
 WHERE s.Disease_ID = id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckTreatmentOfId` (`id` INT)   BEGIN
+SELECT * from treatment WHERE Treatment_ID = id;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `createData` (IN `dName` VARCHAR(60), IN `description` TEXT, IN `classification` VARCHAR(35), IN `categoryID` INT, IN `note` TEXT)   BEGIN
     INSERT INTO disease (Disease_Name, Description, Classification, Category_ID, Note)
@@ -70,6 +88,14 @@ END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteDisease` (IN `ID` INT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
 DELETE FROM disease WHERE disease.Disease_ID = ID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteSymptom` (IN `id` INT)   BEGIN
+DELETE FROM symptom WHERE symptom.Symptom_ID = id;
+End$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteTreatment` (`id` INT)   BEGIN
+DELETE from treatment WHERE `Treatment_ID` = id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetLastDiseaseID` ()   SELECT * FROM `disease` ORDER by Disease_ID DESC LIMIT 1$$
@@ -131,7 +157,7 @@ WHERE d.Disease_ID = id
 LIMIT 1$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SearchDiseaseByLetter` (IN `searchLetter` VARCHAR(5))   BEGIN
-    SELECT Disease_Name, description 
+    SELECT Disease_Name, Description 
     FROM disease 
     WHERE Disease_Name LIKE CONCAT(searchLetter, '%');
 END$$
@@ -146,6 +172,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowAllSymptom` ()   SELECT * FROM 
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfCategory` ()  DETERMINISTIC BEGIN
 SELECT * FROm category;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowListOfTreatment` ()   BEGIN
+SELECT * From treatment;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ShowView_list_disease_symptom` ()   SELECT * FROM list_disease_symptom$$
@@ -163,6 +193,20 @@ END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateDiseaseByID` (IN `id` INT, IN `name` VARCHAR(60), IN `des` TEXT, IN `class` VARCHAR(40), IN `catID` INT, IN `note` TEXT)  DETERMINISTIC SQL SECURITY INVOKER BEGIN
 UPDATE disease SET Disease_Name = name, Description = des, Classification = class, Category_ID = catID, Note = note WHERE disease.Disease_ID = id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateSymptom` (IN `id` INT, IN `name` VARCHAR(50), IN `des` TEXT, IN `sev` VARCHAR(30), IN `note` TEXT)   BEGIN
+UPDATE `symptom` SET Symptom_Name = name , `Description`= des,`Severity`= sev ,`Note`= note 
+WHERE Symptom_ID = id;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateTreatment` (IN `ID` INT, IN `NAME` VARCHAR(50), IN `DES` TEXT, IN `NOTES` TEXT)   BEGIN
+	UPDATE treatment 
+	SET `Treatment_Name` = NAME,
+		`Description` = DES,
+		`Notes` = NOTES
+	WHERE `Treatment_ID` = ID;
 END$$
 
 DELIMITER ;
@@ -208,7 +252,7 @@ INSERT INTO `category` (`Category_ID`, `Category_Name`, `Description`) VALUES
 (7, 'Musculoskeletal', 'Conditions affecting the muscles, bones, and joints, including arthritis, osteoporosis, and muscle strains.'),
 (8, 'Autoimmune', 'Diseases where the immune system attacks the body’s own cells, including rheumatoid arthritis, lupus, and multiple sclerosis.'),
 (9, 'Psychiatric', 'Mental health conditions affecting mood, behavior, and cognition, such as depression, anxiety, and schizophrenia.'),
-(10, 'Hematologic', 'Diseases related to the blood, including anemia, leukemia, and clotting disorders.'),
+(10, 'What', 'Whee'),
 (11, 'Allergic', 'Conditions caused by allergic reactions, including asthma, hay fever, and anaphylaxis.'),
 (12, 'Endocrine', 'Conditions affecting hormone-producing glands, such as thyroid disorders, diabetes, and adrenal insufficiency.'),
 (13, 'Renal', 'Disorders of the kidneys, such as chronic kidney disease, kidney stones, and urinary tract infections.'),
@@ -255,7 +299,13 @@ INSERT INTO `disease` (`Disease_ID`, `Disease_Name`, `Description`, `Classificat
 (90, 'adasdasd', 'asdasda', 'asdasd', 1, '2025-05-04 00:35:54', ''),
 (92, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:11', 'Test Note'),
 (93, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:44:13', 'Test Note'),
-(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note');
+(94, 'Test Disease', 'Test Description', 'Test Classification', 1, '2025-05-04 00:46:54', 'Test Note'),
+(96, 'a', 'b', 'c', 1, '2025-05-10 15:10:31', ''),
+(97, 'meoq', 'awasawa', 'asalksl', 1, '2025-05-10 20:13:07', 'noine'),
+(98, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaaa', 1, '2025-05-10 20:13:52', 'aaaaaaaaaaaaaaaaaa'),
+(99, 'meow', 'meeo', 'emwme', 12, '2025-05-10 20:14:54', 'aaaa'),
+(100, '23323', '2323', '2323', 1, '2025-05-10 20:15:26', '232'),
+(101, '1111', '2222', '1212', 1, '2025-05-10 21:36:32', '');
 
 -- --------------------------------------------------------
 
@@ -281,13 +331,13 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (5, 2, 1),
 (6, 2, 2),
 (7, 2, 8),
-(8, 2, 9),
+(8, 2, NULL),
 (9, 3, 7),
 (10, 3, 13),
-(11, 4, 9),
+(11, 4, NULL),
 (12, 4, 7),
 (13, 4, 6),
-(14, 5, 9),
+(14, 5, NULL),
 (15, 5, 8),
 (16, 5, 7),
 (17, 6, 7),
@@ -317,7 +367,22 @@ INSERT INTO `diseases_symptom` (`Diseases_Symptom_ID`, `Disease_ID`, `Symptom_ID
 (55, NULL, 1),
 (56, NULL, 2),
 (57, NULL, 3),
-(58, NULL, 4);
+(58, NULL, 4),
+(61, 96, 3),
+(62, 96, 4),
+(63, 97, 1),
+(64, 97, 2),
+(65, 97, 3),
+(66, 98, 1),
+(67, 98, 2),
+(68, 98, 3),
+(69, 99, 2),
+(70, 99, 3),
+(71, 99, 4),
+(72, 100, 3),
+(73, 101, 1),
+(74, 101, 2),
+(75, 101, 3);
 
 -- --------------------------------------------------------
 
@@ -355,7 +420,7 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 (16, NULL, NULL, '2025-04-12'),
 (17, NULL, NULL, '2025-04-12'),
 (18, NULL, NULL, '2025-04-12'),
-(19, 1, 1, '2025-05-03'),
+(19, 1, NULL, '2025-05-03'),
 (20, 1, 4, '2025-05-03'),
 (21, 1, 14, '2025-05-03'),
 (22, 2, 3, '2025-05-03'),
@@ -386,7 +451,7 @@ INSERT INTO `diseases_treatment` (`Diseases_Treatment_ID`, `Disease_ID`, `Treatm
 (47, 13, 9, '2025-05-03'),
 (48, 13, 6, '2025-05-03'),
 (49, 14, 5, '2025-05-03'),
-(50, 14, 1, '2025-05-03'),
+(50, 14, NULL, '2025-05-03'),
 (51, 15, 15, '2025-05-03');
 
 -- --------------------------------------------------------
@@ -459,7 +524,7 @@ CREATE TABLE `symptom` (
 --
 
 INSERT INTO `symptom` (`Symptom_ID`, `Symptom_Name`, `Description`, `Severity`, `Note`, `DateCreated`) VALUES
-(1, 'Fever', 'An elevation of body temperature above the normal range.', 'Moderate', 'Common in infections.', '2025-01-10'),
+(1, 'Feversa', 'An elevation of body temperature above the normal range.', 'Moderate', 'Common in infections.', '2025-01-10'),
 (2, 'Cough', 'A sudden, forceful hacking sound to release air and clear irritation in the throat or airway.', 'Mild', 'Can be dry or productive.', '2025-01-11'),
 (3, 'Sore Throat', 'Pain or irritation in the throat, often worsened by swallowing.', 'Moderate', 'Often accompanies upper respiratory infections.', '2025-01-12'),
 (4, 'Runny Nose', 'Excess drainage, ranging from a clear fluid to thick mucus, from the nasal passages.', 'Mild', 'Also called rhinorrhea.', '2025-01-13'),
@@ -467,14 +532,17 @@ INSERT INTO `symptom` (`Symptom_ID`, `Symptom_Name`, `Description`, `Severity`, 
 (6, 'Headache', 'Pain or discomfort in the head or face area.', 'Mild', 'Tension, migraine, or secondary to other conditions.', '2025-01-15'),
 (7, 'Fatigue', 'A feeling of tiredness or exhaustion that may not be relieved by rest.', 'Moderate', 'Can be acute or chronic.', '2025-01-16'),
 (8, 'Shortness of Breath', 'Difficulty breathing or feeling unable to get enough air.', 'Severe', 'Requires prompt evaluation.', '2025-01-17'),
-(9, 'Chest Pain', 'Discomfort or pain in the chest area, which may indicate cardiac or non-cardiac causes.', 'Severe', 'Rule out myocardial infarction.', '2025-01-18'),
 (10, 'Nausea', 'A sensation of unease and discomfort in the upper stomach with an involuntary urge to vomit.', 'Mild', 'Often precedes vomiting.', '2025-01-19'),
-(11, 'Vomiting', 'The forcible voluntary or involuntary emptying (“throwing up”) of stomach contents through the mouth.', 'Moderate', 'Risk of dehydration.', '2025-01-20'),
+(11, 'Vomitingw', 'The forcible voluntary or involuntary emptying (“throwing up”) of stomach contents through the mouth.', 'Moderate', 'Risk of dehydration.', '2025-01-20'),
 (12, 'Diarrhea', 'Loose, watery stools occurring more frequently than usual.', 'Moderate', 'Monitor for fluid loss.', '2025-01-21'),
 (13, 'Abdominal Pain', 'Discomfort in the area between the chest and pelvis.', 'Moderate', 'Etiology can be GI, GU, or other.', '2025-01-22'),
 (14, 'Joint Pain', 'Discomfort arising from any joint of the body.', 'Mild', 'Arthritis or overuse.', '2025-01-23'),
 (15, 'Rash', 'An area of irritated or swollen skin, often itchy or painful.', 'Mild', 'Can be macular, papular, or mixed.', '2025-01-24'),
-(16, 'ttttttttttttt', 'ttttttttttttt', 'ttttttttttttt', '', '2025-05-04');
+(17, 'Muscle Aches', 'Pain or discomfort in the muscles, often diffuse and associated with fatigue.', 'Moderate', 'Common in viral illnesses.', '2025-05-10'),
+(18, 'Cough', 'A sudden, forceful hacking sound to release air and clear irritation in the throat or airway.', 'Mild', 'Can be dry or productive.', '2025-05-10'),
+(19, 'Cough', 'A sudden, forceful hacking sound to release air and clear irritation in the throat or airway.', 'Mild', 'Can be dry or productive.', '2025-05-10'),
+(20, 'Fever', 'An elevation of body temperature above the normal range.', 'Moderate', 'Common in infections.', '2025-05-10'),
+(27, 'Feverssss', 'aaaaaaaaaa', 'Moderate', 'aaa', '2025-05-10');
 
 -- --------------------------------------------------------
 
@@ -495,8 +563,7 @@ CREATE TABLE `treatment` (
 --
 
 INSERT INTO `treatment` (`Treatment_ID`, `Treatment_Name`, `Description`, `Notes`, `Date_Modified`) VALUES
-(1, 'Paracetamol', 'Used to reduce fever and mild pain', 'Commonly used for fever and mild discomfort', '2025-05-03'),
-(2, 'Ibuprofen', 'Nonsteroidal anti-inflammatory drug (NSAID), used for pain relief and to reduce inflammation', 'May cause stomach upset if not taken with food', '2025-05-03'),
+(2, 'Ibuprofenss', 'Nonsteroidal anti-inflammatory drug (NSAID), used for pain relief and to reduce inflammation', 'May cause stomach upset if not taken with food', '2025-05-03'),
 (3, 'Antibiotics', 'Used to treat bacterial infections, often prescribed for pneumonia', 'Requires a full course to prevent resistance', '2025-05-03'),
 (4, 'Cough Syrup', 'Helps in reducing coughing', 'Can be used for dry or productive coughs', '2025-05-03'),
 (5, 'Inhaler', 'Used for asthma and other respiratory conditions to help open airways', 'Essential for managing asthma attacks', '2025-05-03'),
@@ -611,13 +678,13 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `disease`
 --
 ALTER TABLE `disease`
-  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `Disease_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `diseases_symptom`
 --
 ALTER TABLE `diseases_symptom`
-  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `Diseases_Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `diseases_treatment`
@@ -629,13 +696,13 @@ ALTER TABLE `diseases_treatment`
 -- AUTO_INCREMENT for table `symptom`
 --
 ALTER TABLE `symptom`
-  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `Symptom_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `treatment`
 --
 ALTER TABLE `treatment`
-  MODIFY `Treatment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `Treatment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Constraints for dumped tables

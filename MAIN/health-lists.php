@@ -36,6 +36,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Health Topics A-Z</title>
+    <link rel="icon" href="../logo.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>

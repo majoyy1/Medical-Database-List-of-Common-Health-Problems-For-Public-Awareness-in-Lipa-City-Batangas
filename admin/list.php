@@ -6,6 +6,7 @@ session_start();
 <html lang="en">
 <head>
     <!--DataTables CSS-->
+    <link rel="icon" href="../logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
     <!--jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

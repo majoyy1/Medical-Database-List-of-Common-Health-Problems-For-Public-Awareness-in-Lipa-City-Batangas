@@ -1,112 +1,81 @@
+<?php
+require_once 'querys/SC.php';
+
+
+
+$symptomChecker = new SymptomChecker();
+
+
+$diseases = [];
+$treatments = [];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['symptoms']) && is_array($_POST['symptoms'])) {
+    $selectedSymptoms = $_POST['symptoms'];
+
+ 
+    $diseases = $symptomChecker->getPossibleDiseases($selectedSymptoms);
+
+    if (!empty($diseases)) {
+        $diseaseIds = array_column($diseases, 'Disease_ID');
+        $treatments = $symptomChecker->getTreatments($diseaseIds);
+    }
+}
+
+
+$symptomsList = $symptomChecker->getSymptoms();
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Possible Diseases</title>
-    <link rel="stylesheet" href="/STYLES/Styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Symptom Checker</title>
+    <link rel="stylesheet" href="../STYLES/Styles.css">
 </head>
 <body>
-<div class="navbar">
-        <a href= "Index.php"class="logo">HealthMD</a>
-        <div class="dropdown">
-            <a href="checker.php" class="dropbtn">Symptom Checker</a>
-        </div>
-        <div class="dropdown">
-            <a href="#" class="dropbtn">Conditions</a>
-            <div class="dropdown-content">
-                <a href="#">Fever</a>
-                <a href="#">Fatigue</a>
-                <a href="#">Cough</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <a href="#" class="dropbtn">Drugs & Supplements</a>
-            <div class="dropdown-content">
-                <a href="#">Drug 1</a>
-                <a href="#">Drug 2</a>
-                <a href="#">Drug 3</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <a href="#" class="dropbtn">Well-Being</a>
-            <div class="dropdown-content">
-                <a href="#">Well-Being 1</a>
-                <a href="#">Well-Being 2</a>
-                <a href="#">Well-Being 3</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <a href="#" class="dropbtn">Find a Doctor</a>
-            <div class="dropdown-content">
-                <a href="#">Doctor 1</a>
-                <a href="#">Doctor 2</a>
-                <a href="#">Doctor 3</a>
-            </div>
-        </div>
-        <div class="dropdown">
-            <a href="#" class="dropbtn">More</a>
-            <div class="dropdown-content">
-                <a href="#">Option 1</a>
-                <a href="#">Option 2</a>
-                <a href="#">Option 3</a>
-            </div>
+    <h2>Select Symptoms</h2>
+    <form method="POST" action="">
+    <div class="symptoms-box">
+        <div class="symptom-grid">
+            <?php foreach ($symptomsList as $symptom): ?>
+                <label class="symptom-label">
+                    <input type="checkbox" name="symptoms[]" value="<?= htmlspecialchars($symptom['Symptom_Name']) ?>">
+                    <?= htmlspecialchars($symptom['Symptom_Name']) ?>
+                </label>
+            <?php endforeach; ?>
         </div>
     </div>
-    <div class="container">
-
-        <form method="post">
-            Age: <input type="number" name="age" required><br>
-            Sex:
-            <select name="sex" required>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select><br>
-            Symptoms (comma-separated): <input type="text" name="symptoms" placeholder="e.g. Fever,Cough" required><br>
-            <input type="submit" value="Check">
-        </form>
-
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $age = $_POST['age'];
-            $sex = $_POST['sex'];
-            $symptoms = $_POST['symptoms'];
-
-            $servername = "127.0.0.1";
-            $username = "root";
-            $password = "";
-            $dbname = "checkup"; // Replace with your DB name
-
-            try {
-                $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                // Call the stored procedure
-                $stmt = $conn->prepare("CALL GetPossibleDiseases(:age, :sex, :symptoms)");
-                $stmt->bindParam(':age', $age, PDO::PARAM_INT);
-                $stmt->bindParam(':sex', $sex, PDO::PARAM_STR);
-                $stmt->bindParam(':symptoms', $symptoms, PDO::PARAM_STR);
-                $stmt->execute();
-
-                // Show results
-                echo "<h2>Possible Diseases:</h2>";
-                echo "<table><tr><th>Disease</th></tr>";
-
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    echo "<tr><td>" . htmlspecialchars($row['Disease']) . "</td></tr>";
-                }
-
-                echo "</table>";
-                $stmt->closeCursor(); // Important to clear results for next queries
-            } catch(PDOException $e) {
-                echo "<p style='color:red;'>Error: " . $e->getMessage() . "</p>";
-            }
-        }
-        ?>
-
+    
+    <div class="center-button">
+        <button type="submit">Check Diseases</button>
     </div>
+</form>
 
+
+<?php if (!empty($diseases)): ?>
+    <h2>Possible Diseases</h2>
+    <div class="diseases-container">
+        <?php foreach ($diseases as $disease): ?>
+            <div class="disease-box">
+                <strong><?= htmlspecialchars($disease['Disease_Name']) ?></strong><br>
+                <p>Description: <?= nl2br(htmlspecialchars($disease['Description'])) ?></p>
+                <p>Classification: <?= htmlspecialchars($disease['Classification']) ?></p>
+
+                <?php
+                $related = array_filter($treatments, fn($t) => $t['Disease_ID'] == $disease['Disease_ID']);
+                if (!empty($related)):
+                ?>
+                    <strong>Recommended Treatments:</strong>
+                    <ul>
+                        <?php foreach ($related as $treat): ?>
+                            <li><strong><?= htmlspecialchars($treat['Treatment_Name']) ?>:</strong>
+                                <?= htmlspecialchars($treat['Description']) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php elseif ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+    <p class="no-diseases-message">No diseases found for selected symptoms.</p>
+<?php endif; ?>
 </body>
 </html>

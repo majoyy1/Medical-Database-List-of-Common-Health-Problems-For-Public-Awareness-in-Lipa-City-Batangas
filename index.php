@@ -12,6 +12,7 @@
   <div class="hero-content">
     <h1 class="logo">HealthMD</h1>
     <a href="MAIN\checker.php" class="btn-symptom">Symptom Checker</a>
+    <a href="MAIN\health-lists.php" class="btn-symptom">Health Archives A-Z</a>
   </div>
 </header>
 </body>

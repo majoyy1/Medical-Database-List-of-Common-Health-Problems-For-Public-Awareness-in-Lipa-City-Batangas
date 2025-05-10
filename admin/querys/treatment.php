@@ -35,7 +35,7 @@ class CrudTreatment extends dbconnection {
         }
     }
 
-    function updateTreatment( $TreatmentName, $description, $note, $TreatmentID) {
+    function updateTreatment($TreatmentName, $description, $note, $TreatmentID) {
         try {
             
             $stmt = $this->conn->prepare("Call UpdateTreatment(:TreatmentID, :TreatmentName, :description, :note);");
@@ -71,7 +71,24 @@ class CrudTreatment extends dbconnection {
         }
     }
 
+        public function getTreatments($diseaseIds) {
+        
+        try {
+            // Call the stored procedure with the disease IDs as a string
+            $stmt = $this->conn->prepare("CALL GetTreatmentsForDiseases(:id)");
+            $stmt->execute([':id' => $diseaseIds]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
+        }
+    }   
+
 }
+
+$TEMP = new CrudTreatment();
+// var_dump($TEMP->getTreatments(2));
 
 
 ?>

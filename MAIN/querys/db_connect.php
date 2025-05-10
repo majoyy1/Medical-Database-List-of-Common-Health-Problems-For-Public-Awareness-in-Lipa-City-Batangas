@@ -3,7 +3,7 @@
 class dbconnection {
     private $host = "localhost";
     private $dbName = "local_disease_registry_lipa_city";
-    private $username = "root";
+    private $username = "guest";
     private $password = "";
     protected $conn;
 
@@ -28,7 +28,7 @@ class dbconnection {
         } catch(Exception $e) {
             // Log the error message if the connection fails
             error_log("Connection failed: " . $e->getMessage());
-            die("Connection Failed: No Database Connected");
+            die("Connection Failed: No Database Connected" . $e->getMessage());
         }
     }
 

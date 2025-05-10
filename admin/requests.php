@@ -27,8 +27,8 @@ try {
         }
 
         // Handle Delete Treatment
-        if (isset($_GET['DeleteCatID'])) {
-            $id = $treatment->cleanData($_GET['DeleteCatID']);
+        if (isset($_GET['DeletetrtID'])) {
+            $id = $treatment->cleanData($_GET['DeletetrtID']);
             if ($treatment->deleteTreatment($id)) {
                 header("Location: TreatmentList.php?success=1");
             } else {
@@ -58,6 +58,8 @@ try {
             }
             exit;
         }
+
+        
     }
 
     // Handle POST Requests

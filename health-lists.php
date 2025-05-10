@@ -1,5 +1,5 @@
 <?php
-require_once '../admin/querys.php';
+require_once 'admin\querys\disease.php';
 
 $results = []; // Initialize results array
 
@@ -92,11 +92,16 @@ try {
                             li.className = "bg-white p-4 rounded shadow-md hover:shadow-lg transition";
                             li.innerHTML = `
                                 <h2 class='text-xl font-bold text-blue-700'>${topic.Disease_Name}</h2>
-                                <p class='text-gray-700 mt-1'>${topic.Description || 'No description available'}</p>
+                                <p class='text-gray-700 mt-1'>${topic.Description ? topic.Description : 'No description available'}</p>
                             `;
                             list.appendChild(li);
                         });
                     }
+                })
+                .catch(error => {
+                    console.error('Error fetching topics:', error);
+                    const list = document.getElementById('results');
+                    list.innerHTML = '<li class="text-center text-red-500">An error occurred while fetching data.</li>';
                 });
         }
 

@@ -1,9 +1,11 @@
 <?php
 require_once "querys/category.php";
 require_once "querys/disease.php";
+require_once "querys/treatment.php";
 
 $distemp = new CrudDisease();
 $categ = new CrudCategory();
+$treats = new CrudTreatment();
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -55,8 +57,11 @@ try {
         if (isset($_GET['request']) && $_GET['request'] === 'category') {
             $categResult = $categ->read();
             echo json_encode(['dataCategory' => $categResult], JSON_PRETTY_PRINT);
-        }
-
+        }elseif (isset($_GET['request']) && $_GET['request'] === 'Treatment') {
+            $treatResult = $treats->read();
+            echo json_encode(['dataTreatment' => $treatResult], JSON_PRETTY_PRINT);
+        } 
+            
         // Handle Delete Category
         if (isset($_GET['DeleteCatID']) ) {
             $id = $categ->cleanData($_GET['DeleteCatID']);

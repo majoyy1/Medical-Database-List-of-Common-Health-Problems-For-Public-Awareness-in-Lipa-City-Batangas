@@ -52,6 +52,19 @@ class CrudSymptoms extends dbconnection {
             return 0;
         }
     
+    } 
+
+    public function updateSymptom($id, $symptomName, $description, $severity, $note){
+        
+        try {
+            $stmt =$this->conn->prepare("Call UpdateSymptom(:id, :symptomName, :description, :severity, :note);");
+            $stmt->execute([':id' => $id, ':symptomName' => $symptomName, ':description' => $description, ':severity' => $severity ,':note' => $note]);
+            return 1;
+            
+        } catch (PDOException $e) {
+            echo "<script>alert('Error Sending data: " . $e->getMessage() . "');</script>";
+            return 0;
+        }
     }
 
     public function deleteSymptomData($dataId) {
@@ -90,6 +103,7 @@ class CrudSymptoms extends dbconnection {
             die("Error Modifiying data: " . $e->getMessage());
         }
     }
+
 }
 
 

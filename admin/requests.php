@@ -8,7 +8,8 @@ $categ = new CrudCategory();
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle Delete Request
-        if (isset($_POST['DeleteID']) ) {
+        if (isset($_POST['DeleteID']) ) {//DISEASE
+
             $check = $distemp->checkDataById($_POST['DeleteID']);
 
             if ($_POST['DeleteID'] == null) {
@@ -66,9 +67,8 @@ try {
                 throw new Exception("Error Deleting Category.");
             }
         }
-
-
     }
+
 } catch (Exception $err) {
     $msg = "Error Request! " . $err->getMessage() . " Try Again.";
     echo "<script>

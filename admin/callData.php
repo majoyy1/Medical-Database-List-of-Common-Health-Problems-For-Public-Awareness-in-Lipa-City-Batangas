@@ -1,7 +1,7 @@
 <?php
 require_once 'querys/disease.php';
 require_once 'querys/symptoms.php';
-require_once 'querys/treatment.php';
+//require_once 'querys/treatment.php';
 
 header('Content-Type: application/json');
 

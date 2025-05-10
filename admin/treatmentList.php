@@ -60,16 +60,9 @@ session_start();
 
 
         <!-- Edit Form -->
-        <form class="editForm" action="requests.php?request=edit" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Treatment?');">
+        <form class="editForm" action="editTreatment.php" method="POST" onsubmit="return confirm('Are you sure to continue EDIT Treatment?');">
             <label for="editID">ID:</label>
             <input type="input" id="editdata" name="editID" required>
-
-            <label for="editname">Treatment:</label>
-            <input type="input" id="editname" name="TreatmentName" required><br><br>
-
-            <label for="description">Description</label>
-            <input type="input" id="description" name="Description" required><br><br>
-
             <button type="submit">Edit</button>
         </form>
 

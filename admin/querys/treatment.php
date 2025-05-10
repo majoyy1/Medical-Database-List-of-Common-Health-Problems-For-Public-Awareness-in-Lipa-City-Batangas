@@ -35,11 +35,11 @@ class CrudTreatment extends dbconnection {
         }
     }
 
-    function updateTreatment($TreatmentID, $TreatmentName, $description) {
+    function updateTreatment( $TreatmentName, $description, $note, $TreatmentID) {
         try {
             
-            $stmt = $this->conn->prepare("Call UpdateTreatmentByID(:TreatmentID, :TreatmentName, :description);");
-            $stmt->execute([':TreatmentID' => $TreatmentID, ':TreatmentName' => $TreatmentName, ':description' => $description]);
+            $stmt = $this->conn->prepare("Call UpdateTreatment(:TreatmentID, :TreatmentName, :description, :note);");
+            $stmt->execute([':TreatmentID' => $TreatmentID, ':TreatmentName' => $TreatmentName, ':description' => $description, ':note' => $note]);
             return 1;
             
         } catch (PDOException $e) {

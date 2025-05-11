@@ -20,7 +20,7 @@ session_start();
         <h2>Add Treatment</h2>
         <form action="addTreatment.php?request=1" method="POST">
             <label for="treatmentName">Treatment Name:</label>
-            <input type="text" id="treatmentName" name="treatmentName" required><br><br>
+            <input type="text" id="treatmentName" name="treatmentName" maxlength="60" required><br><br>
 
             <label for="description">Description:</label>
             <textarea id="description" name="description"></textarea><br><br>

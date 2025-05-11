@@ -10,23 +10,22 @@ $treatment = new CrudTreatment();
 $symptom = new CrudSymptoms();
 
 try {
-    // Handle GET Requests
+    
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // Fetch Treatment Data
+        
         if (isset($_GET['request']) && $_GET['request'] === 'Treatment') {
             $result = $treatment->read();
             echo json_encode(['dataTreatment' => $result]);
             exit;
         }
 
-        // Fetch Category Data
+        
         if (isset($_GET['request']) && $_GET['request'] === 'category') {
             $categResult = $categ->read();
             echo json_encode(['dataCategory' => $categResult], JSON_PRETTY_PRINT);
             exit;
         }
 
-        // Handle Delete Treatment
         if (isset($_GET['DeletetrtID'])) {
             $id = $treatment->cleanData($_GET['DeletetrtID']);
             if ($treatment->deleteTreatment($id)) {
@@ -37,7 +36,6 @@ try {
             exit;
         }
 
-        // Handle Delete Symptom
         if (isset($_GET['DeleteSymptomID'])) {
             $id = $symptom->cleanData($_GET['DeleteSymptomID']);
             if ($symptom->deleteSymptomData($id)) {
@@ -48,7 +46,6 @@ try {
             exit;
         }
 
-        // Handle Delete Category
         if (isset($_GET['DeleteCatID'])) {
             $id = $categ->cleanData($_GET['DeleteCatID']);
             if ($categ->deleteCategory($id)) {
@@ -62,9 +59,8 @@ try {
         
     }
 
-    // Handle POST Requests
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Handle Add Treatment
+
         if (isset($_GET['request']) && $_GET['request'] === 'addTreatment') {
             $name = $treatment->cleanData($_POST['TreatmentName']);
             $desc = $treatment->cleanData($_POST['Description']);
@@ -77,7 +73,7 @@ try {
         }
 
 
-        // Handle Add Category
+        
         if (isset($_GET['request']) && $_GET['request'] === 'addCategory') {
             $categoryName = $categ->cleanData($_POST['CategoryName']);
             $description = $categ->cleanData($_POST['Description']);
@@ -89,7 +85,7 @@ try {
             exit;
         }
 
-        // Handle Edit Category
+        
         if (isset($_GET['request']) && $_GET['request'] === 'editCategory') {
             $id = $categ->cleanData($_POST['editID']);
             $name = $categ->cleanData($_POST['CategoryName']);
@@ -102,7 +98,7 @@ try {
             exit;
         }
 
-        // Handle Delete Disease
+        
         if (isset($_POST['DeleteID'])) {
             $check = $distemp->checkDataById($_POST['DeleteID']);
             if ($_POST['DeleteID'] == null) {

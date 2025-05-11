@@ -81,7 +81,7 @@ try {
             <input type="hidden" value="edit" name="request">
             
             <label for="treatmentName">Treatment Name:</label>
-            <input type="text" id="treatmentName" name="treatmentName" value="<?= htmlspecialchars($Data['Treatment_Name'] ?? '') ?>" required><br><br>
+            <input type="text" id="treatmentName" maxlength="60" name="treatmentName" value="<?= htmlspecialchars($Data['Treatment_Name'] ?? '') ?>" required><br><br>
 
             <label for="description">Description:</label>
             <textarea id="description" name="description"><?= htmlspecialchars($Data['Description'] ?? '') ?></textarea><br><br>

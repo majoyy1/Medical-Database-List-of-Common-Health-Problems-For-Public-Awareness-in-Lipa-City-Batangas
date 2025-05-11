@@ -20,13 +20,13 @@ session_start();
         <h2>Add Symptom</h2>
         <form action="addSymptom.php?request=1" method="POST">
             <label for="symptomName">Symptom Name:</label>
-            <input type="text" id="symptomName" name="symptomName" required><br><br>
+            <input type="text" id="symptomName" name="symptomName" maxlength="60" required><br><br>
 
             <label for="description">Description:</label>
             <textarea id="description" name="description"></textarea><br><br>
 
             <label for="severity">Severity:</label>
-            <input type="text" id="severity" name="severity" required><br><br>
+            <input type="text" id="severity" name="severity" maxlength="30" required><br><br>
 
             <label for="note">Note:</label>
             <textarea id="note" name="note"></textarea><br><br>
@@ -64,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 });
             </script>";
         } else {
-            // Error response
             echo "<script>
                 Swal.fire({
                     title: 'Error!',

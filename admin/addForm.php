@@ -64,13 +64,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <form action="addForm.php?request=1" method="post" class="edit-form">
         <h2>Add Disease Data</h2>
         <label for="Diname">Disease Name:</label>
-        <input type="text" id="DiName" name="DiName" required><br><br>
+        <input type="text" id="DiName" name="DiName" maxlength="60" required><br><br>
 
         <label for="description">Description:</label>
         <textarea name="Description" id="description" required></textarea><br><br>
         
         <label for="classification">Classification</label>
-        <input type="text" id="classification" name="Classification" required><br><br>
+        <input type="text" id="classification" name="Classification" maxlength="40" required><br><br>
 
         <label for="category">Category:</label>
         <select id="category" name="Category">
@@ -85,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ?>
         </select><br><br>
         
-        <!-- Multiple-select dropdown -->
         <label for="symptoms">Symptoms:</label>
         <select id="symptoms" name="Symptoms[]" multiple>
             <?php
@@ -102,7 +101,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <button type="button" class="btn btn-secondary" onclick="window.location.href='addSymptom.php'">Add Symptom</button><br>
         
-        <!-- Multiple-select dropdown -->
         <label for="treatment">Treatment:</label>
         <select id="treatment" name="Treatment[]" multiple>
             <?php
@@ -122,9 +120,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <label for="Note">Note:</label>
         <textarea id="note" name="Note"></textarea><br><br>
-
-        
-
         <button type="submit" name="addData">Submit</button>
         <button type="reset">Reset</button>
         <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Back</button>
@@ -133,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
     <script>
         $('form.edit-form').on('submit', function (e) {
-            e.preventDefault(); // Prevent the default form submission
+            e.preventDefault();
 
             Swal.fire({
                 title: 'Are you sure?',
@@ -146,7 +141,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // If confirmed, submit the form
                     this.submit();
                 }
             });

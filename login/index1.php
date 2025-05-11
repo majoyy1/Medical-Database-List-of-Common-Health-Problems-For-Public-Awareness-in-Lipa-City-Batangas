@@ -59,7 +59,6 @@ if (isset($_SESSION['registration_error'])) {
 </head>
 <body class="bg-light">
 
-<!-- Home Button -->
 <div class="container py-3">
     <div class="d-flex justify-content-start">
         <a href="../index.php" class="btn btn-secondary">Home</a>
@@ -68,7 +67,6 @@ if (isset($_SESSION['registration_error'])) {
     
 <div class="container py-5">
     <div class="row justify-content-center">
-        <!-- Login Form -->
         <div class="col-md-5 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body">
@@ -76,11 +74,11 @@ if (isset($_SESSION['registration_error'])) {
                     <form action="index1.php" method="post" id="loginForm">
                         <div class="mb-3">
                             <label for="uname" class="form-label">Username</label>
-                            <input type="text" class="form-control" name="uname" id="uname" placeholder="username" required>
+                            <input type="text" class="form-control" name="uname" maxlength="50" id="uname" placeholder="username" required>
                         </div>
                         <div class="mb-3">
                             <label for="pass" class="form-label" placeholder="password">Password</label>
-                            <input type="password" class="form-control" name="pass" id="pass" required>
+                            <input type="password" class="form-control" name="pass" id="pass" maxlength="30" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
                     </form>
@@ -88,19 +86,24 @@ if (isset($_SESSION['registration_error'])) {
             </div>
         </div>
 
+        <!-- Register Form Toggle Button -->
+        <div class="text-center mb-3">
+            <button type="button" class="btn btn-secondary" id="toggleRegisterForm">Register</button>
+        </div>
+
         <!-- Register Form -->
-        <div class="col-md-5">
+        <div id="registerFormContainer" style="display: none;">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h3 class="card-title text-center mb-4">Register</h3>
                     <form action="index1.php" method="post" id="registerForm">
                         <div class="mb-3">
                             <label for="unameReg" class="form-label">Username</label>
-                            <input type="text" class="form-control" name="unameReg" id="unameReg" required>
+                            <input type="text" class="form-control" name="unameReg" maxlength="50" id="unameReg" required>
                         </div>
                         <div class="mb-3">
                             <label for="passReg" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="passReg" id="passReg" required>
+                            <input type="password" class="form-control" name="passReg" maxlength="30" id="passReg" required>
                         </div>
                         <button type="submit" class="btn btn-success w-100">Register</button>
                     </form>
@@ -110,7 +113,31 @@ if (isset($_SESSION['registration_error'])) {
     </div>
 </div>
 
-
+<script>
+    document.getElementById('toggleRegisterForm').addEventListener('click', function () {
+        Swal.fire({
+            title: 'Register',
+            html: `
+                <form action="index1.php" method="post" id="registerForm">
+                    <div class="mb-3">
+                        <label for="unameReg" class="form-label">Username</label>
+                        <input type="text" class="form-control" name="unameReg" maxlength="50" id="unameReg" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passReg" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="passReg" maxlength="30" id="passReg" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Register</button>
+                </form>
+            `,
+            showConfirmButton: false, 
+            showCloseButton: true, 
+            customClass: {
+                popup: 'swal-wide' 
+            }
+        });
+    });
+</script>
 
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -148,7 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Registration handler
     if (isset($_POST['unameReg']) && isset($_POST['passReg'])) {
         try {
             $username = trim($_POST['unameReg']);

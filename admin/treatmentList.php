@@ -95,13 +95,13 @@ session_start();
             ]
         });
 
-        // Handle Edit Button Click
+        
         $('#TreatmentTable').on('click', '.edit-btn', function() {
             const id = $(this).data('id');
             window.location.href = `editTreatment.php?editID=${id}`;
         });
 
-        // Handle Delete Button Click
+        
         $('#TreatmentTable').on('click', '.delete-btn', function() {
             const id = $(this).data('id');
             if (confirm('Are you sure you want to delete this treatment?')) {

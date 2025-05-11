@@ -35,7 +35,6 @@ try {
                 throw new Exception("No data found for the given ID.");
             }
 
-            // Compare the current data with the updated data
             $currentData = [
                 'Symptom_Name' => $temp[0]['Symptom_Name'],
                 'Description' => $temp[0]['Description'],
@@ -51,7 +50,6 @@ try {
             ];
 
             if ($currentData == $updatedData) {
-                // No changes detected
                 echo "<script>
                     alert('No changes were made.');
                     window.location.href = 'symptomLists.php';
@@ -97,13 +95,13 @@ try {
         <form action="editSymptom.php" method="POST">
             <input type="hidden" value="<?= htmlspecialchars($_GET['editID']) ?>" name="ID">
             <label for="symptomName">Symptom Name:</label>
-            <input type="text" id="symptomName" name="symptomName" value="<?= htmlspecialchars($Data['Symptom_Name']) ?>" required><br><br>
+            <input type="text" id="symptomName" maxlength="50" name="symptomName" value="<?= htmlspecialchars($Data['Symptom_Name']) ?>" required><br><br>
 
             <label for="description">Description:</label>
             <textarea id="description" name="description"><?= htmlspecialchars($Data['Description']) ?></textarea><br><br>
 
             <label for="severity">Severity:</label>
-            <input type="text" id="severity" name="severity" value="<?= htmlspecialchars($Data['Severity']) ?>" required><br><br>
+            <input type="text" id="severity" name="severity" maxlength="30" value="<?= htmlspecialchars($Data['Severity']) ?>" required><br><br>
 
             <label for="note">Note:</label>
             <textarea id="note" name="note"><?= htmlspecialchars($Data['Note']) ?></textarea><br><br>

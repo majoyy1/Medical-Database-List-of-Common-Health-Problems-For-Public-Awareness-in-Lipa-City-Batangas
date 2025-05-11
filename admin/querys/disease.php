@@ -22,7 +22,6 @@ class CrudDisease extends dbconnection {
 
     public function createData($DisName, $description, $classification, $categoryID, $note, $symptomIDs, $treatmentIDs) {
         try {
-            // Validate inputs
             if (empty($DisName) || empty($classification) || empty($categoryID)) {
                 throw new Exception("Disease Name, Classification, and Category ID are required.");
             }
@@ -42,7 +41,6 @@ class CrudDisease extends dbconnection {
             }
             $diseaseID = $createdID[0]['Disease_ID'];
 
-            // Insert symptoms if provided
             if (!empty($symptomIDs) && is_array($symptomIDs)) {
                 foreach ($symptomIDs as $symptomID) {
                     if (!is_numeric($symptomID)) {
@@ -53,7 +51,6 @@ class CrudDisease extends dbconnection {
                 }
             }
 
-            // Insert treatments if provided
             if (!empty($treatmentIDs) && is_array($treatmentIDs)) {
                 foreach ($treatmentIDs as $treatmentID) {
                     if (!is_numeric($treatmentID)) {
@@ -64,13 +61,13 @@ class CrudDisease extends dbconnection {
                 }
             }
 
-            return 1; // Success
+            return 1;
         } catch (PDOException $e) {
-            error_log("Database error creating disease: " . $e->getMessage());
-            return 0; // Failure
+            die("Database error creating disease: " . $e->getMessage());
+            return 0;
         } catch (Exception $e) {
-            error_log("Error creating disease: " . $e->getMessage());
-            return 0; // Failure
+            die("Error creating disease: " . $e->getMessage());
+            return 0;
         }
     }
 
@@ -101,21 +98,53 @@ class CrudDisease extends dbconnection {
         return htmlspecialchars($temp);
     }
 
-    function modifyData($Id, $Name, $Description, $Classification, $CategoryID, $Note) {
+    function modifyData($Id, $Name, $Description, $Classification, $CategoryID, $Note, $symptomIDs, $treatmentIDs) {
         try {
             $disName = $this->cleanData($Name);
             $description = $this->cleanData($Description);
             $classification = $this->cleanData($Classification);
             $note = $this->cleanData($Note);
-            echo $Id;
-    
-            $stmt = $this->conn->prepare("Call UpdateDiseaseByID(:DataID, :DisName, :description, :classification, :categoryID, :note);");
-            $stmt->execute([':DataID' => $Id, ':DisName' => $disName, ':description' => $description, 
-                ':classification' => $classification, ':categoryID' => $CategoryID, ':note' => $note]);
-            return 1;
+
+           
+            $stmt = $this->conn->prepare("CALL UpdateDiseaseByID(:DataID, :DisName, :description, :classification, :categoryID, :note);");
+            $stmt->execute([
+                ':DataID' => $Id,
+                ':DisName' => $disName,
+                ':description' => $description,
+                ':classification' => $classification,
+                ':categoryID' => $CategoryID,
+                ':note' => $note
+            ]);
+
+            $stmt = $this->conn->prepare("CALL DeleteDiseaseSymptom(:diseaseID);");
+            $stmt->execute([':diseaseID' => $Id]);
+
+            $stmt = $this->conn->prepare("CALL DeleteDiseaseTreatment(:diseaseID);");
+            $stmt->execute([':diseaseID' => $Id]);
+
+            foreach ($symptomIDs as $symptomID) {
+                if (!is_numeric($symptomID)) {
+                    throw new Exception("Invalid Symptom ID: $symptomID");
+                }
+                $stmt = $this->conn->prepare("CALL AddDiseaseSymptom(:diseaseID, :symptomID);");
+                $stmt->execute([':diseaseID' => $Id, ':symptomID' => $symptomID]);
+            }
+
+            foreach ($treatmentIDs as $treatmentID) {
+                if (!is_numeric($treatmentID)) {
+                    throw new Exception("Invalid Treatment ID: $treatmentID");
+                }
+                $stmt = $this->conn->prepare("CALL AddDiseaseTreatment(:diseaseID, :treatmentID);");
+                $stmt->execute([':diseaseID' => $Id, ':treatmentID' => $treatmentID]);
+            }
+
+            return 1; 
         } catch (PDOException $e) {
-            die("Error Modifying data: " . $e->getMessage());
-            return 0; // Return false on failure
+            error_log("Database error modifying disease: " . $e->getMessage());
+            return 0;
+        } catch (Exception $e) {
+            error_log("Error modifying disease: " . $e->getMessage());
+            return 0;
         }
     }
 

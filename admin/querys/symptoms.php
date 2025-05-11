@@ -92,11 +92,10 @@ class CrudSymptoms extends dbconnection {
             die("Error Modifiying data: " . $e->getMessage());
         }
     }
-//still no procedure for this, just reminder
-    function deleteDiseaseSymptomConnector($symptomID, $diseaseID) {
+    function deleteDiseaseSymptomConnector($diseaseID) {
         try {
-            $stmt = $this->conn->prepare("Call DeleteDiseaseSymptom(:symptomID, :diseaseID);");
-            $stmt->execute([':symptomID' => $symptomID, ':diseaseID' => $diseaseID]);
+            $stmt = $this->conn->prepare("Call DeleteDiseaseSymptom(:diseaseID);");
+            $stmt->execute([':diseaseID' => $diseaseID]);
             return 1;
             
         } catch (PDOException $e) {

@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+require_once 'querys/disease.php';
+
+$disease = new CrudDisease();
+$total = $disease->read();
+$totalDiseases = count($total);
 ?>
 
 <!DOCTYPE html>
@@ -25,8 +31,7 @@ session_start();
     <title>Disease Data</title>
 </head>
 <body>
-<!-- Bootstrap Navigation Bar -->
-    <!-- Bootstrap Nav-Pills -->
+
     <ul class="nav nav-pills justify-content-center bg-light py-3">
         <li class="nav-item">
             <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'category.php' ? 'active' : '' ?>" href="categoryList.php">Category</a>
@@ -47,7 +52,13 @@ session_start();
 
     <div style="text-align: center;">
         <h3 class="title">Health Lists</h3>
+        <p>Total Diseases: <strong><?php echo $totalDiseases; ?></strong></p>
     </div>
+        <div class="formContainer">
+        <form class="addForm" >
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='addForm.php'">Add Data</button>
+        </form>
+
     <table id="DiseaseTable" class="display-table" >
         <thead>
             <th>
@@ -55,17 +66,11 @@ session_start();
             </th>
         </thead>
     </table>
-    
-    <div class="formContainer">
-        <!-- Add Form -->
-        <form class="addForm" >
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='addForm.php'">Add Data</button>
-        </form>
 
         <!-- Edit Form -->
         <form class="editForm" action="edit.php" method="GET" onsubmit="return confirm('Are you sure to continue EDIT Data?');">
             <label for="editID">ID:</label>
-            <input type="text" id="editdata" name="editID" placeholder="ID">
+            <input type="text" id="editdata" name="editID" placeholder="ID" maxlength="5">
             <input type="text" id="idver" name="auth" value="1" hidden>
             <button type="submit">Edit</button>
         </form>
@@ -73,7 +78,7 @@ session_start();
         <!-- Delete Form -->
         <form class="deleteForm" action="requests.php" method="post" onsubmit="return confirm('Delete this Data?');">
             <label for="DeleteID">ID:</label>
-            <input type="text" id="DiName" name="DeleteID" placeholder="ID">
+            <input type="text" id="DiName" name="DeleteID" placeholder="ID" maxlength="5">
             <button type="submit" id="diName">DELETE</button>
         </form><br>
 
@@ -92,7 +97,6 @@ session_start();
                     <p><strong>Description:</strong> <span id="modalDescription"></span></p>
                     <p><strong>Classification:</strong> <span id="modalClassification"></span></p>
                     <p><strong>Category:</strong> <span id="modalCategory"></span></p>
-                    <!-- <p><strong>Severity:</strong> <span id="modalSeverity"></span></p> -->
                     <p><strong>Symptoms:</strong> <span id="modalSymptom"></span></p>
                     <p><strong>Comment:</strong> <span id="modalAdditionalInfo"></span></p>
                     <p><strong>Treatment:</strong> <span id="modalTreatment"></span></p>
@@ -130,13 +134,13 @@ session_start();
             ]
         });
 
-        // Add click event to rows
+        
         $('#DiseaseTable tbody').on('click', 'tr', function() {
             const data = table.row(this).data();
             if (data) {
                 $.ajax({
                     url: 'callData.php',
-                    method: 'POST', // Use POST to send the ID
+                    method: 'POST',
                     data: {
                         request: '2',
                         id: data.Disease_ID
@@ -163,7 +167,7 @@ session_start();
                             $('#modalCategory').text(data.Category || 'N/A');
                             $('#modalAdditionalInfo').text(data.Note || 'N/A');
 
-                            // Display symptoms
+                            
                             if (symptomsData.length > 0) {
                                 const uniqueSymptoms = [...new Map(symptomsData.map(symptom => [symptom.Symptom_Name, symptom])).values()];
                                 const symptoms = uniqueSymptoms.map(symptom => symptom.Symptom_Name).filter(name => name).join(', ');
@@ -172,7 +176,7 @@ session_start();
                                 $('#modalSymptom').text('N/A');
                             }
 
-                            // Display treatments
+                            
                             if (treatmentsData.length > 0) {
                                 const treatments = treatmentsData.map(treatment => treatment.Treatment_Name).join(', ');
                                 $('#modalTreatment').text(treatments || 'N/A');
@@ -180,7 +184,7 @@ session_start();
                                 $('#modalTreatment').text('N/A');
                             }
 
-                            // Show the Info
+                            
                             $('#detailsModal').modal('show');
                         } else {
                             Swal.fire({

@@ -55,7 +55,7 @@ session_start();
     <div class="formContainer">
         <form class="addForm" action="requests.php?request=add" method="POST" onsubmit="return confirm('Are you sure to continue ADD Category?');">
             <label for="categname">Category:</label>
-            <input type="text" id="categname" name="CategoryName" placeholder="Enter category name" required><br><br>
+            <input type="text" id="categname" name="CategoryName" placeholder="Enter category name" maxlength="40" required><br><br>
             
             <label for="des">Description</label>
             <input type="text" id="des" name="Description" placeholder="Category description" required><br><br>
@@ -68,7 +68,7 @@ session_start();
             <input type="input" id="editdata" name="editID" placeholder="ID">
 
             <label for="editname">Category:</label>
-            <input type="input" id="editname" name="CategoryName" required><br><br>
+            <input type="input" id="editname" name="CategoryName" maxlength="40" required><br><br>
 
             <label for="description">Description</label>
             <input type="input" id="description" name="Description" required><br><br>

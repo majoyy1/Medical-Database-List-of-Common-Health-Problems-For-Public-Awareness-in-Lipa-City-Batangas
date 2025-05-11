@@ -46,18 +46,10 @@ session_start();
 
     <div style="text-align: center;">
         <h3 class="title">Symptom Lists</h3>
-        <!-- Add Symptom Button -->
         <a href="addSymptom.php" class="btn btn-success mb-3">Add Symptom</a>
     </div>
     <table id="SymptomTable" class="display-table">
         <thead>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Severity</th>
-            <th>Note</th>
-            <th>Date Added</th>
-            <th>Actions</th>
         </thead>
     </table>
 

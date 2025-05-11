@@ -4,7 +4,6 @@ body {
     background-color: #e2f0d9; /* Light green background */
     margin: 0;
     padding: 20px;
-    display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -106,4 +105,46 @@ form small {
     form button {
         font-size: 14px;
     }
+}
+
+/* Symptoms Checkboxes */
+#symptoms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between checkbox items */
+    margin-bottom: 15px;
+}
+
+#symptoms .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between checkbox and label */
+    width: 200px; /* Set a fixed width for each item to align them properly */
+}
+
+#symptoms .checkbox-item input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+}
+
+/* Treatment Checkboxes */
+#treatment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between checkbox items */
+    margin-bottom: 15px;
+}
+
+#treatment .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between checkbox and label */
+    width: 200px; /* Set a fixed width for each item to align them properly */
+}
+
+#treatment .checkbox-item input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
 }

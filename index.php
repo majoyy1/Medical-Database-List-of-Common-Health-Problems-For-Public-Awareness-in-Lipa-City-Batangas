@@ -14,7 +14,9 @@
     <h1 class="logo">HealthMD</h1>
     <a href="MAIN\checker.php" class="btn-symptom">Symptom Checker</a>
     <a href="MAIN\health-lists.php" class="btn-symptom">Health Archives A-Z</a>
+    <a href="admin" class="btn-symptom">Admin</a>
   </div>
 </header>
 </body>
 </html>
+

@@ -42,8 +42,8 @@ class encryptionWork {
             };
 
             // var_dump($result);
-            echo $result[0]["username"];
-            echo $result[0]["encryption"];
+            // echo $result[0]["username"];
+            // echo $result[0]["encryption"];
 
             $dbhashedpass = trim($result[0]["encryption"]);
             if (password_verify($InputPassword, $dbhashedpass)){

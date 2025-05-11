@@ -27,7 +27,6 @@ class CrudDisease extends dbconnection {
                 throw new Exception("Disease Name, Classification, and Category ID are required.");
             }
 
-            // Insert the disease
             $stmt = $this->conn->prepare("CALL AddDisease(:DisName, :description, :classification, :categoryID, :note);");
             $stmt->execute([
                 ':DisName' => $DisName,
@@ -37,7 +36,6 @@ class CrudDisease extends dbconnection {
                 ':note' => $note
             ]);
 
-            // Get the created Disease ID
             $createdID = $this->getCreatedID();
             if (empty($createdID) || !isset($createdID[0]['Disease_ID'])) {
                 throw new Exception("Failed to retrieve the created Disease ID.");
@@ -51,17 +49,18 @@ class CrudDisease extends dbconnection {
                         throw new Exception("Invalid Symptom ID: $symptomID");
                     }
                     $stmt = $this->conn->prepare("CALL AddDiseaseSymptom(:diseaseID, :symptomID);");
-                    $stmt->execute([':diseaseID' => $diseaseID,':symptomID' => $symptomID]);
+                    $stmt->execute([':diseaseID' => $diseaseID, ':symptomID' => $symptomID]);
                 }
             }
 
-            if (!empty($IDs) && is_array($treatmentIDs)) {
+            // Insert treatments if provided
+            if (!empty($treatmentIDs) && is_array($treatmentIDs)) {
                 foreach ($treatmentIDs as $treatmentID) {
-                    if (!is_numeric($symptomID)) {
-                        throw new Exception("Invalid Symptom ID: $treatmentID");
+                    if (!is_numeric($treatmentID)) {
+                        throw new Exception("Invalid Treatment ID: $treatmentID");
                     }
                     $stmt = $this->conn->prepare("CALL AddDiseaseTreatment(:diseaseID, :treatmentID);");
-                    $stmt->execute([':diseaseID' => $diseaseID,':treatmentID' => $treatmentID]);
+                    $stmt->execute([':diseaseID' => $diseaseID, ':treatmentID' => $treatmentID]);
                 }
             }
 

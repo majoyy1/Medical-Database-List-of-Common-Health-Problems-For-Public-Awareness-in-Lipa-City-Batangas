@@ -58,6 +58,14 @@ if (isset($_SESSION['registration_error'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
+
+<!-- Home Button -->
+<div class="container py-3">
+    <div class="d-flex justify-content-start">
+        <a href="../index.php" class="btn btn-secondary">Home</a>
+    </div>
+</div>
+    
 <div class="container py-5">
     <div class="row justify-content-center">
         <!-- Login Form -->
@@ -71,7 +79,7 @@ if (isset($_SESSION['registration_error'])) {
                             <input type="text" class="form-control" name="uname" id="uname" placeholder="username" required>
                         </div>
                         <div class="mb-3">
-                            <label for="pass" class="form-label">Password</label>
+                            <label for="pass" class="form-label" placeholder="password">Password</label>
                             <input type="password" class="form-control" name="pass" id="pass" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Login</button>
@@ -101,6 +109,8 @@ if (isset($_SESSION['registration_error'])) {
         </div>
     </div>
 </div>
+
+
 
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -180,5 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+
 </body>
 </html>
